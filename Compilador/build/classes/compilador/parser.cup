@@ -29,7 +29,7 @@ parser code {:
         archivoPrograma = new File(Programa);
 
         this.bw = new BufferedWriter(new FileWriter(archivoPrograma));
-        bw.write("package compilador;\n\npublic class " + nombrePrograma + "{\n\n");
+        bw.write("package algoritmos;\n\npublic class " + nombrePrograma + "{\n\n");
     }
 
     /* Change the method report_error so it will display the line and
@@ -202,7 +202,7 @@ terminal CORCHIZQ, CORCHDER, SEMI, DOSP, SUMA, RESTA, MULTI, DIVIDE,
          IGUAL, MENORIGUAL, MAYORIGUAL, LLAVEIZQ, LLAVEDER, MAIN, FUNCTION, PROCEDURE, RETURN, 
          FOR, ENDFOR, WHILE, ENDWHILE, IF, ELSE, ENDIF, 
          REPEAT, IN, OUT, INOUT, ESCRIBA, LLAME,
-         TO, AND, OR, TRUE, FALSE, COMA;
+         TO, AND, OR, TRUE, FALSE, COMA, CERO;
 
 terminal Integer NUM;
 terminal Float DECIMAL;
@@ -373,6 +373,9 @@ asignacion ::= ID:id1 ASSIGN ID:id2
                |
                ID:id ASSIGN llame:l
                {: RESULT = id + "=" + l; :}
+               |
+               ID:id ASSIGN CERO:c
+               {: RESULT = id + "=" + c; :}
                ;
 
 escriba ::= ESCRIBA PARENIZQ MENSAJE:m PARENDER 
@@ -429,13 +432,13 @@ paramllame ::= numero:n {: RESULT=n; :} | ID:i {: RESULT=i; :};
 para ::= FOR asignacion:a TO NUM:n DOSP operaciones:o ENDFOR
          {: 
             String[] var = String.valueOf(a).split("=");
-            RESULT = "for( "+a+" "+var[0].trim()+" <= "+n+" ; "+var[0].trim()+" ++){ "+o+" }"; 
+            RESULT = "for( "+a+" ; "+var[0].trim()+" <= "+n+" ; "+var[0].trim()+" ++){ "+o+" }"; 
          :}
          |
          FOR asignacion:a TO ID:i DOSP operaciones:o ENDFOR
          {: 
             String[] var = String.valueOf(a).split("=");
-            RESULT = "for( "+a+" "+var[0].trim()+" <= "+i+" ; "+var[0].trim()+" ++){ "+o+" }"; 
+            RESULT = "for( "+a+" ; "+var[0].trim()+" <= "+i+" ; "+var[0].trim()+" ++){ "+o+" }"; 
          :}
          ;
 

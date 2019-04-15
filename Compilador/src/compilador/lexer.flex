@@ -103,6 +103,7 @@ COMENTARIO = "//" .*?
     "false"            { System.out.print(" false "); return symbol(sym.FALSE, yytext()); }
 
     {NUM}              { System.out.print(yytext()); return symbol(sym.NUM, new Integer(yytext())); }
+    {CERO}             { System.out.print(yytext()); return symbol(sym.CERO, new Integer(yytext())); }
     {DECIMAL}          { System.out.print(yytext()); return symbol(sym.DECIMAL, new Float(yytext())); }
     {ID}               { System.out.print(" "+yytext()); return symbol(sym.ID, yytext());}
     {MENSAJE}          { System.out.print(yytext()); return symbol(sym.MENSAJE, yytext());}
