@@ -1,8 +1,0 @@
-main{
-  int n;
-  int i;
-  n<-5;
-  for i<-0 to n:
-    escriba('hola');
-  endfor
-}
