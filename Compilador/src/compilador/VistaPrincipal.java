@@ -16,6 +16,7 @@ import java.io.IOException;
 import java.io.Reader;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.StyleConstants;
@@ -117,11 +118,11 @@ public class VistaPrincipal extends javax.swing.JFrame {
 
         String file = "src/algoritmos/" + archivo + ".txt";
         archivoPrograma = new File(file);
-        System.out.println("Guardando en: "+archivo);
+        System.out.println("Guardando en: " + archivo);
 
         try {
             bw = new BufferedWriter(new FileWriter(archivoPrograma));
-            System.out.println("Codigo: "+txtCodigo.getText());
+            System.out.println("Codigo: " + txtCodigo.getText());
             bw.write(txtCodigo.getText());
             bw.close();
         } catch (IOException ex) {
@@ -145,55 +146,55 @@ public class VistaPrincipal extends javax.swing.JFrame {
         if (txtCodigo.getText().contains("int")) {
             PonerNegrita(txtCodigo.getText().lastIndexOf("int"), 3, Color.blue);
         }
-        
+
         if (txtCodigo.getText().contains("double")) {
             PonerNegrita(txtCodigo.getText().lastIndexOf("double"), 6, Color.blue);
         }
-        
+
         if (txtCodigo.getText().contains("boolean")) {
             PonerNegrita(txtCodigo.getText().lastIndexOf("boolean"), 7, Color.blue);
         }
-        
+
         if (txtCodigo.getText().contains("String")) {
             PonerNegrita(txtCodigo.getText().lastIndexOf("String"), 7, Color.blue);
         }
-        
+
         if (txtCodigo.getText().contains("if")) {
             PonerNegrita(txtCodigo.getText().lastIndexOf("if"), 2, Color.blue);
         }
-        
+
         if (txtCodigo.getText().contains("for")) {
             PonerNegrita(txtCodigo.getText().lastIndexOf("for"), 3, Color.blue);
         }
-        
+
         if (txtCodigo.getText().contains("while")) {
             PonerNegrita(txtCodigo.getText().lastIndexOf("while"), 5, Color.blue);
         }
-        
+
         if (txtCodigo.getText().contains("repeat")) {
             PonerNegrita(txtCodigo.getText().lastIndexOf("repeat"), 6, Color.blue);
         }
-        
+
         if (txtCodigo.getText().contains("endif")) {
             PonerNegrita(txtCodigo.getText().lastIndexOf("endif"), 5, Color.blue);
         }
-        
+
         if (txtCodigo.getText().contains("endfor")) {
             PonerNegrita(txtCodigo.getText().lastIndexOf("endfor"), 6, Color.blue);
         }
-        
+
         if (txtCodigo.getText().contains("endwhile")) {
             PonerNegrita(txtCodigo.getText().lastIndexOf("endwhile"), 8, Color.blue);
         }
-        
+
         if (txtCodigo.getText().contains("function")) {
             PonerNegrita(txtCodigo.getText().lastIndexOf("function"), 8, Color.black);
         }
-        
+
         if (txtCodigo.getText().contains("procedure")) {
             PonerNegrita(txtCodigo.getText().lastIndexOf("procedure"), 9, Color.black);
         }
-        
+
         if (txtCodigo.getText().contains("main")) {
             PonerNegrita(txtCodigo.getText().lastIndexOf("main"), 4, Color.black);
         }
@@ -208,6 +209,13 @@ public class VistaPrincipal extends javax.swing.JFrame {
     }
 
     private void AnalizarCodigo(String archivo) throws FileNotFoundException, IOException {
+        if (archivo.isEmpty()) {
+            JFileChooser selectorArchivos = new JFileChooser();
+            selectorArchivos.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
+            selectorArchivos.showOpenDialog(this);
+            File file = selectorArchivos.getSelectedFile();
+            archivo = file.getName().substring(0, file.getName().length()-4);
+        }
         Reader reader = new BufferedReader(new FileReader("src/algoritmos/" + archivo + ".txt"));
         Lexer lexer = new Lexer(reader);
         parser miParser = new parser(lexer, "Programa");

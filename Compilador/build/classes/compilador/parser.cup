@@ -56,13 +56,13 @@ parser code {:
             if (s.left >= 0) {                
                 /* Add to the end of the StringBuilder error message
                    the line number of the error in the input. */
-                m.append(" in line "+(s.left+1));   
+                m.append(" en la línea "+(s.left+1));   
                 /* Check if the column number in the input is greater
                    or equal to zero. */
                 if (s.right >= 0)                    
                     /* Add to the end of the StringBuilder error message
                        the column number of the error in the input. */
-                    m.append(", column "+(s.right+1));
+                    m.append(", columna "+(s.right+1));
             }
         }
    
@@ -72,7 +72,8 @@ parser code {:
    
         /* Print the contents of the StringBuilder 'm', which contains
            an error message, out on a line. */
-        System.err.println(m);
+        JOptionPane.showMessageDialog(null, m, "Error de sintaxis", JOptionPane.ERROR_MESSAGE);
+        System.out.println(m);
     }
    
     /* Change the method report_fatal_error so when it reports a fatal
@@ -82,7 +83,7 @@ parser code {:
        'message' and then exit.*/
     public void report_fatal_error(String message, Object info) {
         report_error(message, info);
-        System.exit(1);
+        //System.exit(1);
     }
 
     String Programa;
