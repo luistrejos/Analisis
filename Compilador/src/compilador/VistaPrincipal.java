@@ -102,7 +102,7 @@ public class VistaPrincipal extends javax.swing.JFrame {
                         .addComponent(btnGuardar)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(btnAnalizar)))
-                .addContainerGap(259, Short.MAX_VALUE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         pack();
@@ -115,11 +115,13 @@ public class VistaPrincipal extends javax.swing.JFrame {
 
         archivo = JOptionPane.showInputDialog("Ingrese el nombre del programa");
 
-        String file = "/home/jitzo/NetBeansProjects/Compilador/src/compilador/" + archivo + ".txt";
+        String file = "src/algoritmos/" + archivo + ".txt";
         archivoPrograma = new File(file);
+        System.out.println("Guardando en: "+archivo);
 
         try {
             bw = new BufferedWriter(new FileWriter(archivoPrograma));
+            System.out.println("Codigo: "+txtCodigo.getText());
             bw.write(txtCodigo.getText());
             bw.close();
         } catch (IOException ex) {
@@ -206,7 +208,7 @@ public class VistaPrincipal extends javax.swing.JFrame {
     }
 
     private void AnalizarCodigo(String archivo) throws FileNotFoundException, IOException {
-        Reader reader = new BufferedReader(new FileReader("/home/jitzo/NetBeansProjects/Compilador/src/compilador/" + archivo + ".txt"));
+        Reader reader = new BufferedReader(new FileReader("src/algoritmos/" + archivo + ".txt"));
         Lexer lexer = new Lexer(reader);
         parser miParser = new parser(lexer, "Programa");
         try {

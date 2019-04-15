@@ -1,4 +1,4 @@
-//package compilador;
+package compilador;
 
 public class Programa{
 

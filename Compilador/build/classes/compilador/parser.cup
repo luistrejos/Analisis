@@ -25,7 +25,7 @@ parser code {:
     public parser(java_cup.runtime.Scanner s, String nombrePrograma) throws IOException {
         super(s);
 
-        Programa = "/home/jitzo/NetBeansProjects/Compilador/src/compilador/"+nombrePrograma+".java";
+        Programa = "src/algoritmos/"+nombrePrograma+".java";
         archivoPrograma = new File(Programa);
 
         this.bw = new BufferedWriter(new FileWriter(archivoPrograma));
