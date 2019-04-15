@@ -1,4 +1,4 @@
-package algoritmos;
+package ejecucion;
 
 public class Programa{
 

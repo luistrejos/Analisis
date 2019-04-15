@@ -122,11 +122,13 @@ public class VistaPrincipal extends javax.swing.JFrame {
 
         String file = "src/algoritmos/" + archivo + ".txt";
         archivoPrograma = new File(file);
-        System.out.println("Guardando en: " + archivo);
 
         try {
             bw = new BufferedWriter(new FileWriter(archivoPrograma));
-            System.out.println("Codigo: " + txtCodigo.getText());
+            bw.write(txtCodigo.getText());
+            bw.close();
+            archivoPrograma = new File("/home/jitzo/Documentos/GitHub/Analisis/Ejecucion/src/ejecucion/algoritmo.txt");
+            bw = new BufferedWriter(new FileWriter(archivoPrograma));
             bw.write(txtCodigo.getText());
             bw.close();
         } catch (IOException ex) {

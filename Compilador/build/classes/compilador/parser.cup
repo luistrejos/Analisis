@@ -29,7 +29,7 @@ parser code {:
         archivoPrograma = new File(Programa);
 
         this.bw = new BufferedWriter(new FileWriter(archivoPrograma));
-        bw.write("package algoritmos;\n\npublic class " + nombrePrograma + "{\n\n");
+        bw.write("package ejecucion;\n\npublic class " + nombrePrograma + "{\n\n");
     }
 
     /* Change the method report_error so it will display the line and
