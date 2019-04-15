@@ -1,0 +1,541 @@
+
+   
+   
+/* ----------------------Preliminary Declarations Section--------------------*/
+   
+package compilador;
+
+/*Imports*/
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
+import javax.swing.JOptionPane;
+import java.util.Arrays;
+   
+/* Parser code to change the way the parser reports errors (include
+   line and column number of the error). 
+*/
+parser code {:
+    
+    public parser(java_cup.runtime.Scanner s, String nombrePrograma) throws IOException {
+        super(s);
+
+        Programa = "/home/jitzo/NetBeansProjects/Compilador/src/compilador/"+nombrePrograma+".java";
+        archivoPrograma = new File(Programa);
+
+        this.bw = new BufferedWriter(new FileWriter(archivoPrograma));
+        bw.write("package compilador;\n\npublic class " + nombrePrograma + "{\n\n");
+    }
+
+    /* Change the method report_error so it will display the line and
+       column of where the error occurred in the input as well as the
+       reason for the error which is passed into the method in the
+       String 'message'. 
+    */
+    public void report_error(String message, Object info) {
+   
+        /* Create a StringBuilder called 'm' with the string 'Error' in it. */
+        StringBuilder m = new StringBuilder("Error");
+   
+        /* Check if the information passed to the method is the same
+           type as the type java_cup.runtime.Symbol. 
+        */
+        if (info instanceof java_cup.runtime.Symbol) {
+            /* Declare a java_cup.runtime.Symbol object 's' with the
+               information in the object info that is being typecasted
+               as a java_cup.runtime.Symbol object. */
+            java_cup.runtime.Symbol s = ((java_cup.runtime.Symbol) info);
+   
+            /* Check if the line number in the input is greater or
+               equal to zero. */
+            if (s.left >= 0) {                
+                /* Add to the end of the StringBuilder error message
+                   the line number of the error in the input. */
+                m.append(" in line "+(s.left+1));   
+                /* Check if the column number in the input is greater
+                   or equal to zero. */
+                if (s.right >= 0)                    
+                    /* Add to the end of the StringBuilder error message
+                       the column number of the error in the input. */
+                    m.append(", column "+(s.right+1));
+            }
+        }
+   
+        /* Add to the end of the StringBuilder error message created in
+           this method the message that was passed into this method. */
+        m.append(" : "+message);
+   
+        /* Print the contents of the StringBuilder 'm', which contains
+           an error message, out on a line. */
+        System.err.println(m);
+    }
+   
+    /* Change the method report_fatal_error so when it reports a fatal
+       error it will display the line and column number of where the
+       fatal error occurred in the input as well as the reason for the
+       fatal error which is passed into the method in the object
+       'message' and then exit.*/
+    public void report_fatal_error(String message, Object info) {
+        report_error(message, info);
+        System.exit(1);
+    }
+
+    String Programa;
+    File archivoPrograma;
+    BufferedWriter bw;
+    boolean ejecutar = false;
+    
+    private void CerrarArchivo() throws IOException{
+        bw.close();
+    }
+
+    //Bandera para saber si el algoritmo está bien escrito
+    boolean bienEscrito = false;
+
+    /*Método que indica si el algoritmo fué bien escrito*/
+    public void FinAlgoritmo(Object vs, Object s, Object vs2, Object o) throws IOException {
+        if (bienEscrito) {
+            //Traducir("/home/jitzo/NetBeansProjects/Compilador/src/compilador/test.txt");
+            JOptionPane.showMessageDialog(null, "Algoritmo bien escrito");
+            if(vs != null){
+                TraducirVariables(String.valueOf(vs),true);
+            }
+            if(s != null){
+                TraducirSubprograma(String.valueOf(s));
+            }
+            bw.write("public static void main(String[] args){\n");
+            if(vs2 != null){
+                TraducirVariables(String.valueOf(vs2),false);
+            }
+            if(o != null){
+                TraducirSubprograma(String.valueOf(o));
+            }  
+            bw.write("}");//Cierra la main
+            bw.write("}");//Cierra la clase
+            ejecutar = true;
+            CerrarArchivo();
+        } else {
+            report_error("Algoritmo mal escrito", null);
+            System.exit(1);
+        }
+    }
+
+    /*Método para traducir subprogramas*/
+    private void TraducirSubprograma(String s) throws IOException {
+        String[] sp = s.split(" ");
+        System.out.println("\nsp>>>> " + Arrays.toString(sp));
+        int n = -1;
+        for (int i = 0; i < sp.length; i++) {
+            if ((sp[i].endsWith("int") || sp[i].endsWith("boolean") || sp[i].endsWith("float") || sp[i].endsWith("String"))
+                    && !sp[i].contains("(")) {
+                if (!sp[i + 1].contains("(") && !sp[i + 1].endsWith("int") && !sp[i + 1].endsWith("boolean") && !sp[i + 1].endsWith("float") && !sp[i + 1].endsWith("String")) {
+                    sp[i + 1] = sp[i + 1] + ";";
+                }
+            }
+            if (sp[i].contains("[")) {
+                n = i + 1;
+                TraducirVariables(sp[i] + " " + sp[i + 1], false);
+            } else {
+                if (i != n) {
+                    bw.write(" " + sp[i]);
+                }
+            }
+
+        }
+    }
+
+    /*Método para traducir variables*/
+    private void TraducirVariables(String v, boolean b) throws IOException {
+        String[] vars = v.split(" ");
+        String st = "";
+        if (b) {
+            st = "static ";
+        }
+        for (int i = 0; i < vars.length; i += 2) {
+            if (vars[i].contains("[")) {
+                String[] aux = vars[i].split("\\[");
+                String n = aux[1].substring(0, aux[1].length() - 1);
+                if (!n.equals("")) {
+                    switch (aux[0]) {
+                        case "int":
+                            bw.write(st+"int[] " + vars[i + 1] + "= new int[" + n + "];\n");
+                            break;
+                        case "float":
+                            bw.write(st+"float[] " + vars[i + 1] + "= new float[" + n + "];\n");
+                            break;
+                        case "boolean":
+                            bw.write(st+"boolean[] " + vars[i + 1] + "= new boolean[" + n + "];\n");
+                            break;
+                        case "String":
+                            bw.write(st+"String[] " + vars[i + 1] + "= new String[" + n + "];\n");
+                            break;
+                    }
+                } else {
+                    bw.write(v);
+                }
+            } else {
+                bw.write(st + vars[i] + " " + vars[i + 1] + ";\n");
+            }
+        }
+    }
+
+:};
+   
+
+   
+/* ------------Declaration of Terminals and Non Terminals Section----------- */
+   
+/* Terminals (tokens returned by the scanner).  
+
+   Terminals that have no value are listed first and then terminals
+   that do have an value, in this case an integer value, are listed on
+   the next line down. */
+
+terminal CORCHIZQ, CORCHDER, SEMI, DOSP, SUMA, RESTA, MULTI, DIVIDE,
+         PARENIZQ, PARENDER, ASSIGN, MENOR, MAYOR, DIFERENTE,
+         IGUAL, MENORIGUAL, MAYORIGUAL, LLAVEIZQ, LLAVEDER, MAIN, FUNCTION, PROCEDURE, RETURN, 
+         FOR, ENDFOR, WHILE, ENDWHILE, IF, ELSE, ENDIF, 
+         REPEAT, IN, OUT, INOUT, ESCRIBA, LLAME,
+         TO, AND, OR, TRUE, FALSE, COMA;
+
+terminal Integer NUM;
+terminal Float DECIMAL;
+terminal String ID, MENSAJE, INT, FLOAT, BOOL, STRING;
+   
+/* Non terminals used in the grammar section.  
+
+   Non terminals that have an object value are listed first and then
+   non terminals that have an integer value are listed.  An object
+   value means that it can be any type, it isn't set to a specific
+   type.  So it could be an Integer or a String or whatever. */
+
+non terminal program, variables, variable, subprogramas, subprograma,
+             funcion, procedimiento, operaciones, operacion,
+             parametros, parametro, tipoparametro, asignacion, escriba,
+             llame, para, mientras, condiciones, condicion, 
+             oprel, opmath, suma, resta, multiplicacion, division,
+             si, sino, repita, retorne, numero, control, factor, paramsllame, 
+             paramllame;
+
+non terminal String type;
+   
+
+/* -------------Precedence and Associatively of Terminals Section----------- */
+   
+/*
+  Precedence of non terminals could be defined here.  If you do define
+  precedence here you won't need to worry about precedence in the
+  Grammar Section, i.e. that MULTI should have a higher precedence
+  than SUMA.
+  
+  The precedence defined here would look something like this where the
+  lower line always will have higher precedence than the line before it.
+*/  
+  
+precedence left SUMA, RESTA; 
+precedence left MULTI, DIVIDE; 
+precedence left ASSIGN;
+
+
+
+/* ----------------------------Grammar Section-------------------- */
+
+program ::= variables:vs subprogramas:s MAIN CORCHIZQ variables:vs2 operaciones:o CORCHDER 
+            {:
+            parser.bienEscrito = true;
+            parser.FinAlgoritmo(vs,s,vs2,o);
+            :}
+            |
+            variables:v subprogramas:s MAIN CORCHIZQ operaciones:o CORCHDER
+            {:             
+            parser.bienEscrito = true;
+            parser.FinAlgoritmo(v,s,null,o); 
+            :}
+            |
+            subprogramas:s MAIN CORCHIZQ variables:v operaciones:o CORCHDER
+            {: 
+            parser.bienEscrito = true;
+            parser.FinAlgoritmo(null,s,v,o); 
+            :}
+            |
+            subprogramas:s MAIN CORCHIZQ operaciones:o CORCHDER
+            {: 
+            parser.bienEscrito = true;
+            parser.FinAlgoritmo(null,s,null,o); 
+            :}
+            |
+            MAIN CORCHIZQ variables:v operaciones:o CORCHDER
+            {: 
+            parser.bienEscrito = true;
+            parser.FinAlgoritmo(null,null,v,o); 
+            :}
+            ;
+
+variables ::= variables:vs variable:v SEMI 
+              {: RESULT = vs +" "+v; :}
+              |
+              variable:v SEMI 
+              {: RESULT = v; :};
+
+variable ::= type:t ID:i
+             {: RESULT = t+" "+i; :}             
+             | 
+             type:t LLAVEIZQ NUM:n LLAVEDER ID:i 
+             {: RESULT = t+"["+n+"] "+i; :};
+
+subprogramas ::= subprogramas:sp subprograma:s {: RESULT = sp +" "+s; :} | subprograma:s {: RESULT = s; :};
+
+subprograma ::= funcion:f {: RESULT = f; :} | procedimiento:p {: RESULT = p; :};
+
+funcion ::= FUNCTION ID:i PARENIZQ parametros:p PARENDER DOSP type:t CORCHIZQ variables:v operaciones:o retorne:r CORCHDER
+            {: RESULT = "public static "+t+" "+i+"("+p+"){\n"+v+" "+o+" "+r+";}\n\n"; :}
+            |
+            FUNCTION ID:i PARENIZQ parametros:p PARENDER DOSP type:t CORCHIZQ operaciones:o retorne:r CORCHDER 
+            {: RESULT = "public static "+t+" "+i+"("+p+"){\n"+o+" "+r+";}\n\n"; :}
+            |
+            FUNCTION ID:i PARENIZQ PARENDER DOSP type:t CORCHIZQ variables:v operaciones:o retorne:r CORCHDER 
+            {: RESULT = "public static "+t+" "+i+"( ){\n"+v+" "+o+" "+r+";}\n\n"; :}
+            |
+            FUNCTION ID:i PARENIZQ PARENDER DOSP type:t CORCHIZQ operaciones:o retorne:r CORCHDER
+            {: RESULT = "public static "+t+" "+i+"( ){\n"+o+" "+r+";}\n\n"; :}
+            ;
+
+procedimiento ::= PROCEDURE ID:i PARENIZQ parametros:p PARENDER CORCHIZQ variables:v operaciones:o CORCHDER
+                  {: RESULT = "public static void "+i+"("+p+"){\n"+v+" "+o+" }"; :}
+                  |
+                  PROCEDURE ID:i PARENIZQ parametros:p PARENDER CORCHIZQ operaciones:o CORCHDER
+                  {: RESULT = "public static void "+i+"("+p+"){\n"+o+" }"; :}
+                  |
+                  PROCEDURE ID:i PARENIZQ PARENDER CORCHIZQ variables:v operaciones:o CORCHDER
+                  {: RESULT = "public static void "+i+"( ){\n"+v+" "+o+" }"; :}
+                  |
+                  PROCEDURE ID:i PARENIZQ PARENDER CORCHIZQ operaciones:o CORCHDER
+                  {: RESULT = "public static void "+i+"( ){\n"+o+" }"; :}
+                  ;
+
+operaciones ::= operaciones:op operacion:o {: RESULT = op +" "+o; :} | operacion:o {: RESULT = o; :} ;
+
+operacion ::= asignacion:a SEMI {: RESULT = a; :}
+            | 
+            escriba:e SEMI {: RESULT = e; :}
+            |
+            llame:l SEMI {: RESULT = l; :}
+            | 
+            para:p {: RESULT = p; :}
+            |
+            mientras:m {: RESULT = m; :}
+            |
+            control:c {: RESULT = c; :}
+            |
+            repita:r {: RESULT = r; :}
+            ;
+
+type ::= BOOL:b {: RESULT = b; :} | INT:i {: RESULT = i; :} | FLOAT:f {: RESULT = f; :} | STRING:s {: RESULT = s; :};
+
+parametros ::= parametros:pr COMA parametro:p {: RESULT = pr +" , "+p; :} | parametro:p {: RESULT = p; :};
+
+parametro ::= tipoparametro variable:v {: RESULT= v; :} 
+              | 
+              tipoparametro type:t LLAVEIZQ LLAVEDER ID:i {: RESULT = t+"[] "+i; :};
+
+tipoparametro ::= IN:i {: RESULT = i; :} | OUT:o {: RESULT = o; :} | INOUT:in {: RESULT = in; :};
+
+numero ::= NUM:n {:RESULT = n; :}| DECIMAL:d {:RESULT = d; :};
+
+asignacion ::= ID:id1 ASSIGN ID:id2 
+               {: RESULT = id1 + "=" + id2+" ;"; :}
+               |
+               ID:id ASSIGN numero:n 
+               {: RESULT = id + "=" + n+" ;"; :} 
+               |
+               ID:id ASSIGN operacion:op 
+               {: RESULT = id + "=" + op+" ;"; :}
+               |
+               ID:id ASSIGN TRUE
+               {: RESULT = id + "= true;"; :}
+               |
+               ID:id ASSIGN FALSE
+               {: RESULT = id + "= false;"; :}
+               |
+               ID:id ASSIGN factor:f 
+               {: RESULT = id + "=" + f+" ;"; :}
+               |
+               ID:id ASSIGN MENSAJE:m 
+               {: 
+                char comilla = 34;
+                RESULT = id + "="+ comilla + String.valueOf(m).substring(1, String.valueOf(m).length()-1) +comilla+" ;"; :}
+               |
+               ID:id ASSIGN llame:l
+               {: RESULT = id + "=" + l; :}
+               ;
+
+escriba ::= ESCRIBA PARENIZQ MENSAJE:m PARENDER 
+            {: 
+                String aux = String.valueOf(m);
+                aux = aux.substring(1,aux.length()-1);
+                char comilla = 34;
+                RESULT = "System.out.println("+comilla+aux+comilla+");"; 
+            :}
+            |
+            ESCRIBA PARENIZQ MENSAJE:m COMA ID:i PARENDER
+            {: 
+                String aux = String.valueOf(m);
+                aux = aux.substring(1,aux.length()-1);
+                char comilla = 34;
+                RESULT = "System.out.println("+comilla+aux+comilla+"+"+i+");"; 
+            :}
+            |
+            ESCRIBA PARENIZQ ID:i COMA MENSAJE:m PARENDER 
+            {: 
+                String aux = String.valueOf(m);
+                aux = aux.substring(1,aux.length()-1);
+                char comilla = 34;
+                RESULT = "System.out.println("+i+"+"+comilla+aux+comilla+");"; 
+            :}
+            |
+            ESCRIBA PARENIZQ ID:i1 COMA ID:i2 PARENDER 
+            {: 
+                char comilla = 34;
+                RESULT = "System.out.println("+i1+"+"+comilla+","+comilla+"+"+i2+");"; 
+            :}
+            |
+            ESCRIBA PARENIZQ ID:i PARENDER 
+            {: 
+                RESULT = "System.out.println("+i+");"; 
+            :}
+            ;
+
+llame ::= LLAME PARENIZQ ID:i PARENIZQ paramsllame:p PARENDER PARENDER 
+          {:
+            RESULT = i+" ("+p+" );"; 
+          :}
+          |
+          LLAME PARENIZQ ID:i PARENIZQ PARENDER PARENDER 
+          {:
+            RESULT = i+"();"; 
+          :}
+          ;
+
+paramsllame ::= paramsllame:ps COMA paramllame:p {: RESULT=ps+" , "+p; :} | paramllame:p {: RESULT=p; :};
+
+paramllame ::= numero:n {: RESULT=n; :} | ID:i {: RESULT=i; :};
+
+para ::= FOR asignacion:a TO NUM:n DOSP operaciones:o ENDFOR
+         {: 
+            String[] var = String.valueOf(a).split("=");
+            RESULT = "for( "+a+" "+var[0].trim()+" <= "+n+" ; "+var[0].trim()+" ++){ "+o+" }"; 
+         :}
+         |
+         FOR asignacion:a TO ID:i DOSP operaciones:o ENDFOR
+         {: 
+            String[] var = String.valueOf(a).split("=");
+            RESULT = "for( "+a+" "+var[0].trim()+" <= "+i+" ; "+var[0].trim()+" ++){ "+o+" }"; 
+         :}
+         ;
+
+mientras ::= WHILE PARENIZQ condiciones:c PARENDER DOSP operaciones:o ENDWHILE
+             {: RESULT = "while( "+c+" ){"+o+" }"; :}
+             ;
+
+condiciones ::= condiciones:cs AND condicion:c {: RESULT= cs+" && "+c; :}
+                |
+                condiciones:cs OR condicion:c {: RESULT= cs+" || "+c; :}
+                |
+                condicion:c {: RESULT=c; :}
+                ;
+
+condicion ::= ID:i1 oprel:o ID:i2 {: RESULT = i1+" "+o+" "+i2; :}
+              |
+              ID:i oprel:o numero:n {: RESULT = i+" "+o+" "+n; :}
+              |
+              numero:n oprel:o ID:i {: RESULT = n+" "+o+" "+i; :}
+              |
+              ID:i oprel:o opmath:om {: RESULT = i+" "+o+" "+om; :}
+              |
+              opmath:om oprel:o ID:i {: RESULT = om+" "+o+" "+i; :}
+              |
+              numero:n oprel:o opmath:om {: RESULT = n+" "+o+" "+om; :}
+              |
+              opmath:om oprel:o numero:n {: RESULT = om+" "+o+" "+n; :}
+              |
+              opmath:om1 oprel:o opmath:om2 {: RESULT = om1+" "+o+" "+om2; :}
+              |
+              TRUE {: RESULT="true"; :}
+              |
+              FALSE {: RESULT="false"; :}
+              ;
+
+factor ::= PARENIZQ numero:n PARENDER {: RESULT = "("+n+")"; :} | PARENIZQ opmath:o PARENDER {: RESULT = "("+o+")"; :};
+
+oprel ::= MENOR {: RESULT = "<"; :} | MAYOR {: RESULT = ">"; :} 
+          | 
+          MENORIGUAL {: RESULT = "<="; :} | MAYORIGUAL {: RESULT = ">="; :} 
+          | 
+          DIFERENTE {: RESULT = "!="; :} | IGUAL {: RESULT = "=="; :};
+
+opmath ::= suma:s {: RESULT = s; :} | resta:r {: RESULT = r; :} 
+           |
+           multiplicacion:m {: RESULT = m; :} | division:d {: RESULT = d; :};
+
+suma ::= numero:n1 SUMA numero:n2 {: RESULT= n1+" + "+n2; :} 
+         |
+         numero:n SUMA ID:i {: RESULT= n+" + "+i; :} 
+         |
+         ID:i SUMA numero:n {: RESULT= i+" + "+n; :} 
+         |
+         ID:i1 SUMA ID:i2 {: RESULT= i1+" + "+i2; :} 
+         ;
+
+resta ::= numero:n1 RESTA numero:n2 {: RESULT= n1+" - "+n2; :}
+         |
+         numero:n RESTA ID:i {: RESULT= n+" - "+i; :} 
+         |
+         ID:i RESTA numero:n {: RESULT= i+" - "+n; :} 
+         |
+         ID:i1 RESTA ID:i2 {: RESULT= i1+" - "+i2; :}
+         ;
+
+multiplicacion ::= numero:n1 MULTI numero:n2 {: RESULT= n1+" * "+n2; :}
+         |
+         numero:n MULTI ID:i {: RESULT= n+" * "+i; :}
+         |
+         ID:i MULTI numero:n {: RESULT= i+" * "+n; :} 
+         |
+         ID:i1 MULTI ID:i2 {: RESULT= i1+" * "+i2; :}
+         ;
+
+division ::= numero:n1 DIVIDE numero:n2 {: RESULT= n1+" / "+n2; :}
+         |
+         numero:n DIVIDE ID:i {: RESULT= n+" / "+i; :}
+         |
+         ID:i DIVIDE numero:n {: RESULT= i+" / "+n; :}
+         |
+         ID:i1 DIVIDE ID:i2 {: RESULT= i1+" / "+i2; :}
+         ;
+
+control ::= si:s {: RESULT=s; :} | sino:sn {: RESULT=sn; :};
+
+si ::= IF PARENIZQ condiciones:c PARENDER DOSP operaciones:o ENDIF {: RESULT="if( "+c+" ){ "+o+" }"; :};
+
+sino ::= IF PARENIZQ condiciones:c PARENDER DOSP operaciones:op1 ELSE operaciones:op2 ENDIF
+         {: RESULT="if( "+c+" ){ "+op1+" }else{ "+op2+" }"; :};
+
+repita ::= REPEAT DOSP operaciones:o WHILE PARENIZQ condiciones:c PARENDER SEMI 
+           {: RESULT = "do{ "+o+" }while( "+c+" );"; :};
+
+retorne ::= RETURN:r ID:i SEMI 
+            {: RESULT = r+" "+i; :} 
+            | 
+            RETURN:r numero:n SEMI 
+            {: RESULT = r+" "+n; :} 
+            |
+            RETURN:r MENSAJE:m SEMI 
+            {: String str = String.valueOf(m); 
+               char comilla = 34;
+               RESULT = r+" "+comilla +str.substring(1,str.length()-1)+comilla;
+            :} ;
