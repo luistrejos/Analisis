@@ -5,6 +5,7 @@
  */
 package ejecucion;
 
+import java.awt.Color;
 import java.awt.List;
 import java.io.BufferedReader;
 import java.io.File;
@@ -231,7 +232,8 @@ public class VistaPrincipal extends javax.swing.JFrame {
         Highlighter h = this.txtAlgoritmo.getHighlighter();
         h.removeAllHighlights();
         try {
-            h.addHighlight(pos, pos+fin, DefaultHighlighter.DefaultPainter);
+            h.addHighlight(pos, pos+fin, new DefaultHighlighter.DefaultHighlightPainter(Color.CYAN));
+            //this.txtAlgoritmo.getHighlighter().add
         } catch (BadLocationException e) {
         }
     }
