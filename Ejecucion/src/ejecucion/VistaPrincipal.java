@@ -5,20 +5,30 @@
  */
 package ejecucion;
 
+import java.awt.List;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.io.Reader;
+import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.DefaultHighlighter;
+import javax.swing.text.Highlighter;
 
 /**
  *
  * @author jitzo
  */
 public class VistaPrincipal extends javax.swing.JFrame {
+
+    Object[][] data;
+    String[] columnNames = {"Variable", "Valor"};
+    DefaultTableModel modelo = new DefaultTableModel(data, columnNames);
 
     /**
      * Creates new form VistaPrincipal
@@ -27,24 +37,27 @@ public class VistaPrincipal extends javax.swing.JFrame {
      */
     public VistaPrincipal() throws FileNotFoundException {
         initComponents();
-        File archivo = null;
-        FileReader fr = null;
-        BufferedReader br = null;
-
         try {
-            archivo = new File("src/ejecucion/algoritmo.txt");
-            fr = new FileReader(archivo);
-            br = new BufferedReader(fr);
+            BufferedReader br = LeerArchivo();
 
             // Lectura del fichero
             String linea;
             while ((linea = br.readLine()) != null) {
-                this.txtAlgoritmo.append(linea+"\n");
+                this.txtAlgoritmo.append(linea + "\n");
             }
         } catch (IOException e) {
         }
 
         this.txtAlgoritmo.setEditable(false);
+        this.tblSeguimiento.setModel(modelo);
+
+    }
+
+    private BufferedReader LeerArchivo() throws FileNotFoundException {
+        File archivo = new File("src/ejecucion/algoritmo.txt");
+        FileReader fr = new FileReader(archivo);
+        BufferedReader br = new BufferedReader(fr);
+        return br;
     }
 
     /**
@@ -60,6 +73,12 @@ public class VistaPrincipal extends javax.swing.JFrame {
         txtAlgoritmo = new javax.swing.JTextArea();
         jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
+        jSeparator1 = new javax.swing.JSeparator();
+        jLabel3 = new javax.swing.JLabel();
+        jScrollPane2 = new javax.swing.JScrollPane();
+        tblSeguimiento = new javax.swing.JTable();
+        btnAutomatico = new javax.swing.JButton();
+        btnPaso = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -67,9 +86,40 @@ public class VistaPrincipal extends javax.swing.JFrame {
         txtAlgoritmo.setRows(5);
         jScrollPane1.setViewportView(txtAlgoritmo);
 
-        jLabel1.setText("Algoritmo del CareStudent");
+        jLabel1.setText("Seguimiento");
 
         jLabel2.setText("Entorno de ejecución");
+
+        jSeparator1.setOrientation(javax.swing.SwingConstants.VERTICAL);
+
+        jLabel3.setText("Algoritmo del CareStudent");
+
+        tblSeguimiento.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {},
+                {},
+                {},
+                {}
+            },
+            new String [] {
+
+            }
+        ));
+        jScrollPane2.setViewportView(tblSeguimiento);
+
+        btnAutomatico.setText("Automático");
+        btnAutomatico.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnAutomaticoActionPerformed(evt);
+            }
+        });
+
+        btnPaso.setText("Paso a paso");
+        btnPaso.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnPasoActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -79,34 +129,110 @@ public class VistaPrincipal extends javax.swing.JFrame {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
                         .addContainerGap()
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 240, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 240, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 12, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(btnAutomatico)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(btnPaso))
+                            .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 231, javax.swing.GroupLayout.PREFERRED_SIZE)))
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(41, 41, 41)
+                        .addGap(316, 316, 316)
+                        .addComponent(jLabel2))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(351, 351, 351)
                         .addComponent(jLabel1)))
-                .addContainerGap(241, Short.MAX_VALUE))
+                .addContainerGap(326, Short.MAX_VALUE))
             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                    .addContainerGap(185, Short.MAX_VALUE)
-                    .addComponent(jLabel2)
-                    .addGap(174, 174, 174)))
+                .addGroup(layout.createSequentialGroup()
+                    .addGap(51, 51, 51)
+                    .addComponent(jLabel3)
+                    .addContainerGap(612, Short.MAX_VALUE)))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(57, 57, 57)
+                .addContainerGap()
+                .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 27, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
                 .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 27, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 268, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(40, Short.MAX_VALUE))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(jSeparator1)
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 268, Short.MAX_VALUE)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
+                        .addGap(18, 18, 18)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(btnAutomatico)
+                            .addComponent(btnPaso))))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(layout.createSequentialGroup()
-                    .addGap(22, 22, 22)
-                    .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 27, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addContainerGap(349, Short.MAX_VALUE)))
+                    .addGap(67, 67, 67)
+                    .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 27, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addContainerGap(276, Short.MAX_VALUE)))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    private void btnAutomaticoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAutomaticoActionPerformed
+        // TODO add your handling code here:
+        String[] row = {"f", "4"};
+        modelo.addRow(row);
+        System.out.println(mapa);
+    }//GEN-LAST:event_btnAutomaticoActionPerformed
+
+    boolean b = true;
+    BufferedReader br = null;
+    HashMap<String, Integer> mapa = new HashMap();
+    int pos = 0;
+    
+    private void btnPasoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnPasoActionPerformed
+        // TODO add your handling code here:
+
+        if (b) {
+            try {
+                br = LeerArchivo();
+                b = false;
+                String l = br.readLine();
+                mapa.put(l, pos);
+                System.out.println(l + " : [" + pos+" , "+l.length()+"]");
+                pos = l.length() +1;
+                
+            } catch (FileNotFoundException ex) {
+                Logger.getLogger(VistaPrincipal.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (IOException ex) {
+                Logger.getLogger(VistaPrincipal.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        } else {
+            String linea;
+            try {
+                if ((linea = br.readLine()) != null) {
+                    mapa.put(linea, pos);
+                    System.out.println(linea + " : [" + pos+" , "+linea.length()+"]");
+                    pos += linea.length() +1;                    
+                }
+            } catch (IOException ex) {
+                Logger.getLogger(VistaPrincipal.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+
+
+    }//GEN-LAST:event_btnPasoActionPerformed
+
+    private void SubRayar(int i, int f) {
+        Highlighter h = this.txtAlgoritmo.getHighlighter();
+        h.removeAllHighlights();
+        try {
+            h.addHighlight(0, 20, DefaultHighlighter.DefaultPainter);
+        } catch (BadLocationException e) {
+        }
+    }
 
     /**
      * @param args the command line arguments
@@ -148,9 +274,15 @@ public class VistaPrincipal extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btnAutomatico;
+    private javax.swing.JButton btnPaso;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
     private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JSeparator jSeparator1;
+    private javax.swing.JTable tblSeguimiento;
     private javax.swing.JTextArea txtAlgoritmo;
     // End of variables declaration//GEN-END:variables
 }
