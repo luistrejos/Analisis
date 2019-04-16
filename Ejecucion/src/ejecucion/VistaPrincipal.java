@@ -201,6 +201,7 @@ public class VistaPrincipal extends javax.swing.JFrame {
                 b = false;
                 String l = br.readLine();
                 mapa.put(l, pos);
+                SubRayar(pos, l.length());
                 System.out.println(l + " : [" + pos+" , "+l.length()+"]");
                 pos = l.length() +1;
                 
@@ -214,6 +215,7 @@ public class VistaPrincipal extends javax.swing.JFrame {
             try {
                 if ((linea = br.readLine()) != null) {
                     mapa.put(linea, pos);
+                    SubRayar(pos, linea.length());
                     System.out.println(linea + " : [" + pos+" , "+linea.length()+"]");
                     pos += linea.length() +1;                    
                 }
@@ -225,11 +227,11 @@ public class VistaPrincipal extends javax.swing.JFrame {
 
     }//GEN-LAST:event_btnPasoActionPerformed
 
-    private void SubRayar(int i, int f) {
+    private void SubRayar(int pos, int fin) {
         Highlighter h = this.txtAlgoritmo.getHighlighter();
         h.removeAllHighlights();
         try {
-            h.addHighlight(0, 20, DefaultHighlighter.DefaultPainter);
+            h.addHighlight(pos, pos+fin, DefaultHighlighter.DefaultPainter);
         } catch (BadLocationException e) {
         }
     }
