@@ -250,16 +250,12 @@ precedence left ASSIGN;
 
 program ::= variables:vs subprogramas:s MAIN CORCHIZQ variables:vs2 operaciones:o CORCHDER 
             {:
-             //parser.bienEscrito = true;
-             //parser.FinAlgoritmo(vs,s,vs2,o);
              parser.bw.write("}}");
              parser.CerrarArchivo();
             :}
             |
             variables:v subprogramas:s MAIN CORCHIZQ operaciones:o CORCHDER
             {:             
-             //parser.bienEscrito = true;
-             //parser.FinAlgoritmo(v,s,null,o); 
              parser.bw.write("}}");
              parser.CerrarArchivo();
             :}
@@ -268,14 +264,11 @@ program ::= variables:vs subprogramas:s MAIN CORCHIZQ variables:vs2 operaciones:
             {: 
              JOptionPane.showMessageDialog(null, "Algoritmo bien escrito");
              char comilla = 34;
-             //parser.bienEscrito = true;
-             //parser.FinAlgoritmo(null,s,v,o); 
              parser.bw.write(String.valueOf(s));
              parser.bw.write("public void main(){\n");
              parser.bw.write("instrucciones.add("+comilla+"main{"+comilla+");");
              parser.bw.write(String.valueOf(v));
              parser.bw.write(String.valueOf(o));
-             //parser.bw.write("}");
              parser.bw.write("instrucciones.add("+comilla+"}"+comilla+");}");
              parser.bw.write("}");
              parser.CerrarArchivo();
@@ -283,8 +276,6 @@ program ::= variables:vs subprogramas:s MAIN CORCHIZQ variables:vs2 operaciones:
             |
             subprogramas:s MAIN CORCHIZQ operaciones:o CORCHDER
             {: 
-             //parser.bienEscrito = true;
-             //parser.FinAlgoritmo(null,s,null,o); 
              parser.bw.write("public void main(){\n");
              parser.bw.write("}}");
              parser.CerrarArchivo();
@@ -292,8 +283,6 @@ program ::= variables:vs subprogramas:s MAIN CORCHIZQ variables:vs2 operaciones:
             |
             MAIN CORCHIZQ variables:v operaciones:o CORCHDER
             {: 
-             //parser.bienEscrito = true;
-             //parser.FinAlgoritmo(null,null,v,o); 
              parser.bw.write("}}");
              parser.CerrarArchivo();
             :}
@@ -308,16 +297,12 @@ variables ::= variables:vs variable:v SEMI
 variable ::= type:t ID:i
              {: 
                 char comilla = 34;
-                //parser.bw.write(t+" "+i+";");
-                //parser.bw.write("instrucciones.add("+comilla+t+" "+i+";"+comilla+");");
                 RESULT = t+" "+i+";instrucciones.add("+comilla+t+" "+i+";"+comilla+");"; 
              :}             
              | 
              type:t LLAVEIZQ NUM:n LLAVEDER ID:i 
              {: 
                 char comilla = 34;
-                //parser.bw.write(t+"[] "+i+" = new "+t+"["+n+"];");
-                //parser.bw.write("instrucciones.add("+comilla+t+"["+n+"] "+i+";"+comilla+");");
                 RESULT = t+"[] "+i+" = new "+t+"["+n+"];instrucciones.add("+comilla+t+"["+n+"] "+i+";"+comilla+");"; 
              :};
 
@@ -334,16 +319,38 @@ subprograma ::= funcion:f
                 ;
 
 funcion ::= FUNCTION ID:i PARENIZQ parametros:p PARENDER RET type:t DOSP variables:v operaciones:o retorne:r ENDFUNCTION
-            {: RESULT = "public static "+t+" "+i+"("+p+"){\n"+v+" "+o+" "+r+";}\n\n"; :}
+            {: RESULT = "public "+t+" "+i+"("+p+"){\n"+v+" "+o+" "+r+";}\n\n"; :}
             |
             FUNCTION ID:i PARENIZQ parametros:p PARENDER RET type:t DOSP operaciones:o retorne:r ENDFUNCTION 
-            {: RESULT = "public static "+t+" "+i+"("+p+"){\n"+o+" "+r+";}\n\n"; :}
+            {: 
+             char comilla = 34;
+             String[] aux = String.valueOf(p).split(" ");
+             int cantV = aux.length / 5;
+             String cabP = "";
+             String cabJ = "";
+             int ap=0;
+             for(int j=0;j<cantV;j++){
+                 cabP = cabP +aux[ap] +" "+aux[ap+1] +" "+aux[ap+2].split(";")[0] +aux[ap+4]+" "; 
+                 cabJ = cabJ +aux[ap+1] +" "+aux[ap+2].split(";")[0] +aux[ap+4]+" "; 
+                 ap+=5;
+             }
+             cabP = cabP +aux[ap] +" "+aux[ap+1] +" "+aux[ap+2].split(";")[0];
+             cabJ = cabJ +aux[ap+1] +" "+aux[ap+2].split(";")[0];
+             String[] aux2 = aux[2].split(";");
+             RESULT = "public "+t+" "+i+"("+cabJ+"){\n"+o+"instrucciones.add("+comilla+r+";"+comilla+");instrucciones.add("+comilla+"endfunction"+comilla+");"+r+";}\n\n";  
+            :}
             |
             FUNCTION ID:i PARENIZQ PARENDER RET type:t DOSP variables:v operaciones:o retorne:r ENDFUNCTION 
-            {: RESULT = "public static "+t+" "+i+"( ){\n"+v+" "+o+" "+r+";}\n\n"; :}
+            {: 
+             char comilla = 34;
+             RESULT = "public "+t+" "+i+"( ){instrucciones.add("+comilla+"function "+i+"()->"+t+":"+comilla+");"+v+" "+o+"instrucciones.add("+comilla+r+";"+comilla+");instrucciones.add("+comilla+"endfunction"+comilla+");"+r+";}\n\n"; 
+            :}
             |
             FUNCTION ID:i PARENIZQ PARENDER RET type:t DOSP operaciones:o retorne:r ENDFUNCTION
-            {: RESULT = "public static "+t+" "+i+"( ){\n"+o+" "+r+";}\n\n"; :}
+            {: 
+             char comilla = 34;
+             RESULT = "public "+t+" "+i+"( ){instrucciones.add("+comilla+"function "+i+"()->"+t+":"+comilla+");"+o+"instrucciones.add("+comilla+r+";"+comilla+");instrucciones.add("+comilla+"endfunction"+comilla+");"+r+";}\n\n"; 
+            :}
             ;
 
 procedimiento ::= PROCEDURE ID:i PARENIZQ parametros:p PARENDER DOSP variables:v operaciones:o ENDPROCEDURE
@@ -351,7 +358,6 @@ procedimiento ::= PROCEDURE ID:i PARENIZQ parametros:p PARENDER DOSP variables:v
                     char comilla = 34;
                     String[] aux = String.valueOf(p).split(" ");
                     int cantV = aux.length / 5;
-                    System.out.println("\nVARS: "+(cantV+1));
                     String cabP = "";
                     String cabJ = "";
                     int ap=0;
@@ -362,9 +368,7 @@ procedimiento ::= PROCEDURE ID:i PARENIZQ parametros:p PARENDER DOSP variables:v
                     }
                     cabP = cabP +aux[ap] +" "+aux[ap+1] +" "+aux[ap+2].split(";")[0];
                     cabJ = cabJ +aux[ap+1] +" "+aux[ap+2].split(";")[0];
-                    System.out.println("\nCAB: "+cabP);
                     String[] aux2 = aux[2].split(";");
-                    System.out.println("\nAUX: "+Arrays.toString(aux)+"\n");
                     RESULT = "public void "+i+"("+cabJ+"){instrucciones.add("+comilla+"procedure "+i+"("+cabP+"):"+comilla+");"+v+" "+o+" instrucciones.add("+comilla+"endprocedure"+comilla+");}"; 
                   :}
                   |
@@ -528,9 +532,6 @@ llame ::= LLAME PARENIZQ ID:i PARENIZQ paramsllame:p PARENDER PARENDER
           {:
             char comilla = 34;
             String[] aux = String.valueOf(p).split("'");
-            System.out.println("AUXXXX: "+Arrays.toString(aux));
-            System.out.println("\nPARAMSSSS: "+String.valueOf(p));
-            //System.out.println("\nPARAMS: "+Arrays.toString(aux.length));
             if(aux.length == 1){
                 RESULT = "instrucciones.add("+comilla+"llame("+i+"("+p+"));"+comilla+");"+i+" ("+p+" );";  
             }else{
@@ -569,7 +570,6 @@ para ::= FOR asignacion:a TO NUM:n DOSP operaciones:o ENDFOR
             System.out.println(var[1]);
             String[] val = var[1].split(";");
             char comilla = 34;
-            //instrucciones.add("+comilla+"for "+var[0].trim()+"<-"+val[0].trim()+" to "+i+":"+comilla+");
             RESULT = "for( "+var[0].trim()+"="+val[0].trim()+" ; "+var[0].trim()+" <= "+i+" ; "+var[0].trim()+" ++){ instrucciones.add("+comilla+"for "+var[0].trim()+"<-"+val[0].trim()+" to "+i+":"+comilla+");"+o+" }instrucciones.add("+comilla+"for "+var[0].trim()+"<-"+val[0].trim()+" to "+i+":"+comilla+");instrucciones.add("+comilla+"endfor"+comilla+");"; 
          :}
          ;
