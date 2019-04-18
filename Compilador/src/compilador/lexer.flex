@@ -67,6 +67,7 @@ COMENTARIO = "//" .*?
     "("                { System.out.print(" ( "); return symbol(sym.PARENIZQ, yytext()); }
     ")"                { System.out.print(" ) "); return symbol(sym.PARENDER, yytext()); }
     "<-"               { System.out.print(" <- "); return symbol(sym.ASSIGN, yytext()); }
+    "->"               { System.out.print(" <- "); return symbol(sym.RET, yytext()); }
     "<"                { System.out.print(" < "); return symbol(sym.MENOR, yytext()); }
     ">"                { System.out.print(" > "); return symbol(sym.MAYOR, yytext()); }
     "<>"               { System.out.print(" <> "); return symbol(sym.DIFERENTE, yytext()); }
@@ -77,7 +78,9 @@ COMENTARIO = "//" .*?
     "]"                { System.out.print(" ] "); return symbol(sym.LLAVEDER, yytext()); }
     "main"             { System.out.print(" main "); return symbol(sym.MAIN, yytext()); }
     "function"         { System.out.print(" function "); return symbol(sym.FUNCTION, yytext()); }
+    "endfunction"      { System.out.print(" function "); return symbol(sym.ENDFUNCTION, yytext()); }
     "procedure"        { System.out.print(" procedure "); return symbol(sym.PROCEDURE, yytext()); }
+    "endprocedure"     { System.out.print(" procedure "); return symbol(sym.ENDPROCEDURE, yytext()); }
     "return"           { System.out.print(" return "); return symbol(sym.RETURN, yytext()); }
     "for"              { System.out.print(" for "); return symbol(sym.FOR, yytext()); }
     "endfor"           { System.out.print(" endfor "); return symbol(sym.ENDFOR, yytext()); }

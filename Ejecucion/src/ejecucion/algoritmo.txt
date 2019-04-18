@@ -1,13 +1,19 @@
-procedure imprimir(){
+procedure imprimir(in int p, out boolean b, in String s):
+  int h;
+  float j;
+  boolean o;
+  String e;
   escriba('hey');
-}
+endprocedure
 
 main{
   int n;
   int i;
   int[6] f;
-  n<-5;
+  n<-2;
   for i<-0 to n:
     escriba('hola',i);
   endfor
+  escriba('Fin algoritmo');
+  llame(imprimir(8, true, 'false'));
 }

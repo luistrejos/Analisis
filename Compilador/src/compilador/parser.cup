@@ -204,7 +204,7 @@ terminal CORCHIZQ, CORCHDER, SEMI, DOSP, SUMA, RESTA, MULTI, DIVIDE,
          IGUAL, MENORIGUAL, MAYORIGUAL, LLAVEIZQ, LLAVEDER, MAIN, FUNCTION, PROCEDURE, RETURN, 
          FOR, ENDFOR, WHILE, ENDWHILE, IF, ELSE, ENDIF, 
          REPEAT, IN, OUT, INOUT, ESCRIBA, LLAME,
-         TO, AND, OR, TRUE, FALSE, COMA, CERO;
+         TO, AND, OR, TRUE, FALSE, COMA, CERO, RET, ENDPROCEDURE, ENDFUNCTION;
 
 terminal Integer NUM;
 terminal Float DECIMAL;
@@ -266,13 +266,18 @@ program ::= variables:vs subprogramas:s MAIN CORCHIZQ variables:vs2 operaciones:
             |
             subprogramas:s MAIN CORCHIZQ variables:v operaciones:o CORCHDER
             {: 
+             JOptionPane.showMessageDialog(null, "Algoritmo bien escrito");
+             char comilla = 34;
              //parser.bienEscrito = true;
              //parser.FinAlgoritmo(null,s,v,o); 
              parser.bw.write(String.valueOf(s));
              parser.bw.write("public void main(){\n");
+             parser.bw.write("instrucciones.add("+comilla+"main{"+comilla+");");
              parser.bw.write(String.valueOf(v));
              parser.bw.write(String.valueOf(o));
-             parser.bw.write("}}");
+             //parser.bw.write("}");
+             parser.bw.write("instrucciones.add("+comilla+"}"+comilla+");}");
+             parser.bw.write("}");
              parser.CerrarArchivo();
             :}
             |
@@ -328,35 +333,73 @@ subprograma ::= funcion:f
                 :}
                 ;
 
-funcion ::= FUNCTION ID:i PARENIZQ parametros:p PARENDER DOSP type:t CORCHIZQ variables:v operaciones:o retorne:r CORCHDER
+funcion ::= FUNCTION ID:i PARENIZQ parametros:p PARENDER RET type:t DOSP variables:v operaciones:o retorne:r ENDFUNCTION
             {: RESULT = "public static "+t+" "+i+"("+p+"){\n"+v+" "+o+" "+r+";}\n\n"; :}
             |
-            FUNCTION ID:i PARENIZQ parametros:p PARENDER DOSP type:t CORCHIZQ operaciones:o retorne:r CORCHDER 
+            FUNCTION ID:i PARENIZQ parametros:p PARENDER RET type:t DOSP operaciones:o retorne:r ENDFUNCTION 
             {: RESULT = "public static "+t+" "+i+"("+p+"){\n"+o+" "+r+";}\n\n"; :}
             |
-            FUNCTION ID:i PARENIZQ PARENDER DOSP type:t CORCHIZQ variables:v operaciones:o retorne:r CORCHDER 
+            FUNCTION ID:i PARENIZQ PARENDER RET type:t DOSP variables:v operaciones:o retorne:r ENDFUNCTION 
             {: RESULT = "public static "+t+" "+i+"( ){\n"+v+" "+o+" "+r+";}\n\n"; :}
             |
-            FUNCTION ID:i PARENIZQ PARENDER DOSP type:t CORCHIZQ operaciones:o retorne:r CORCHDER
+            FUNCTION ID:i PARENIZQ PARENDER RET type:t DOSP operaciones:o retorne:r ENDFUNCTION
             {: RESULT = "public static "+t+" "+i+"( ){\n"+o+" "+r+";}\n\n"; :}
             ;
 
-procedimiento ::= PROCEDURE ID:i PARENIZQ parametros:p PARENDER CORCHIZQ variables:v operaciones:o CORCHDER
-                  {: RESULT = "public static void "+i+"("+p+"){\n"+v+" "+o+" }"; :}
-                  |
-                  PROCEDURE ID:i PARENIZQ parametros:p PARENDER CORCHIZQ operaciones:o CORCHDER
-                  {: RESULT = "public static void "+i+"("+p+"){\n"+o+" }"; :}
-                  |
-                  PROCEDURE ID:i PARENIZQ PARENDER CORCHIZQ variables:v operaciones:o CORCHDER
-                  {: RESULT = "public static void "+i+"( ){\n"+v+" "+o+" }"; :}
-                  |
-                  PROCEDURE ID:i PARENIZQ PARENDER CORCHIZQ operaciones:o CORCHDER
+procedimiento ::= PROCEDURE ID:i PARENIZQ parametros:p PARENDER DOSP variables:v operaciones:o ENDPROCEDURE
                   {: 
                     char comilla = 34;
-                    //parser.bw.write("public void "+i+"(){");
-                    //parser.bw.write("instrucciones.add("+comilla+"for "+var[0].trim()+"<-"+var[1].trim()+" to "+i+":"+comilla+");");
-                    //parser.bw.write(o+" }");
-                    RESULT = "public void "+i+"( ){\n"+o+" }"; 
+                    String[] aux = String.valueOf(p).split(" ");
+                    int cantV = aux.length / 5;
+                    System.out.println("\nVARS: "+(cantV+1));
+                    String cabP = "";
+                    String cabJ = "";
+                    int ap=0;
+                    for(int j=0;j<cantV;j++){
+                        cabP = cabP +aux[ap] +" "+aux[ap+1] +" "+aux[ap+2].split(";")[0] +aux[ap+4]+" "; 
+                        cabJ = cabJ +aux[ap+1] +" "+aux[ap+2].split(";")[0] +aux[ap+4]+" "; 
+                        ap+=5;
+                    }
+                    cabP = cabP +aux[ap] +" "+aux[ap+1] +" "+aux[ap+2].split(";")[0];
+                    cabJ = cabJ +aux[ap+1] +" "+aux[ap+2].split(";")[0];
+                    System.out.println("\nCAB: "+cabP);
+                    String[] aux2 = aux[2].split(";");
+                    System.out.println("\nAUX: "+Arrays.toString(aux)+"\n");
+                    RESULT = "public void "+i+"("+cabJ+"){instrucciones.add("+comilla+"procedure "+i+"("+cabP+"):"+comilla+");"+v+" "+o+" instrucciones.add("+comilla+"endprocedure"+comilla+");}"; 
+                  :}
+                  |
+                  PROCEDURE ID:i PARENIZQ parametros:p PARENDER DOSP operaciones:o ENDPROCEDURE
+                  {: 
+                    char comilla = 34;
+                    String[] aux = String.valueOf(p).split(" ");
+                    int cantV = aux.length / 5;
+                    System.out.println("\nVARS: "+(cantV+1));
+                    String cabP = "";
+                    String cabJ = "";
+                    int ap=0;
+                    for(int j=0;j<cantV;j++){
+                        cabP = cabP +aux[ap] +" "+aux[ap+1] +" "+aux[ap+2].split(";")[0] +aux[ap+4]+" "; 
+                        cabJ = cabJ +aux[ap+1] +" "+aux[ap+2].split(";")[0] +aux[ap+4]+" "; 
+                        ap+=5;
+                    }
+                    cabP = cabP +aux[ap] +" "+aux[ap+1] +" "+aux[ap+2].split(";")[0];
+                    cabJ = cabJ +aux[ap+1] +" "+aux[ap+2].split(";")[0];
+                    System.out.println("\nCAB: "+cabP);
+                    String[] aux2 = aux[2].split(";");
+                    System.out.println("\nAUX: "+Arrays.toString(aux)+"\n");
+                    RESULT = "public void "+i+"("+cabJ+"){instrucciones.add("+comilla+"procedure "+i+"("+cabP+"):"+comilla+");"+o+" instrucciones.add("+comilla+"endprocedure"+comilla+");}"; 
+                  :}
+                  |
+                  PROCEDURE ID:i PARENIZQ PARENDER DOSP variables:v operaciones:o ENDPROCEDURE
+                  {: 
+                    char comilla = 34;
+                    RESULT = "public void "+i+"( ){ instrucciones.add("+comilla+"procedure "+i+"():"+comilla+");"+v+" "+o+" instrucciones.add("+comilla+"endprocedure"+comilla+");}"; 
+                  :}
+                  |
+                  PROCEDURE ID:i PARENIZQ PARENDER DOSP operaciones:o ENDPROCEDURE
+                  {: 
+                    char comilla = 34;
+                    RESULT = "public void "+i+"( ){ instrucciones.add("+comilla+"procedure "+i+"():"+comilla+");"+o+" instrucciones.add("+comilla+"endprocedure"+comilla+");}"; 
                   :}
                   ;
 
@@ -381,9 +424,9 @@ type ::= BOOL:b {: RESULT = b; :} | INT:i {: RESULT = i; :} | FLOAT:f {: RESULT 
 
 parametros ::= parametros:pr COMA parametro:p {: RESULT = pr +" , "+p; :} | parametro:p {: RESULT = p; :};
 
-parametro ::= tipoparametro variable:v {: RESULT= v; :} 
+parametro ::= tipoparametro:t variable:v {: RESULT= t +" "+ v; :} 
               | 
-              tipoparametro type:t LLAVEIZQ LLAVEDER ID:i {: RESULT = t+"[] "+i; :};
+              tipoparametro:tp type:t LLAVEIZQ LLAVEDER ID:i {: RESULT = tp+" "+t+"[] "+i; :};
 
 tipoparametro ::= IN:i {: RESULT = i; :} | OUT:o {: RESULT = o; :} | INOUT:in {: RESULT = in; :};
 
@@ -392,73 +435,55 @@ numero ::= NUM:n {:RESULT = n; :}| DECIMAL:d {:RESULT = d; :};
 asignacion ::= ID:id1 ASSIGN ID:id2 
                {: 
                 char comilla = 34;
-                //parser.bw.write(id1+" = "+id2+";");
-                //parser.bw.write("instrucciones.add("+comilla+id1+"<-"+id2+comilla+");");
-                RESULT = id1 + "=" + id2+";instrucciones.add("+comilla+id1+"<-"+id2+comilla+");";
+                RESULT = id1 + "=" + id2+";instrucciones.add("+comilla+id1+"<-"+id2+";"+comilla+");";
                :}
                |
                ID:id ASSIGN numero:n 
                {: 
                 char comilla = 34;
-                //parser.bw.write(id+" = "+n+";");
-                //parser.bw.write("instrucciones.add("+comilla+id+"<-"+n+comilla+");");
-                RESULT = id + "=" + n+";instrucciones.add("+comilla+id+"<-"+n+comilla+");";
+                RESULT = id + "=" + n+";instrucciones.add("+comilla+id+"<-"+n+";"+comilla+");";
                :} 
                |
                ID:id ASSIGN operacion:op 
                {: 
                 char comilla = 34;
-                //parser.bw.write(id+" = "+op+";");
-                //parser.bw.write("instrucciones.add("+comilla+id+"<-"+op+comilla+");");
-                RESULT = id + "=" + op+";instrucciones.add("+comilla+id+"<-"+op+comilla+");";
+                RESULT = id + "=" + op+";instrucciones.add("+comilla+id+"<-"+op+";"+comilla+");";
                :}
                |
                ID:id ASSIGN TRUE
                {: 
                 char comilla = 34;
-                //parser.bw.write(id+" = true;");
-                //parser.bw.write("instrucciones.add("+comilla+id+"<-true"+comilla+");");
-                RESULT = id + "= true;instrucciones.add("+comilla+id+"<-true"+comilla+");";
+                RESULT = id + "= true;instrucciones.add("+comilla+id+"<-true;"+comilla+");";
                :}
                |
                ID:id ASSIGN FALSE
                {: 
                 char comilla = 34;
-                //parser.bw.write(id+" = false;");
-                //parser.bw.write("instrucciones.add("+comilla+id+"<-false"+comilla+");");
-                RESULT = id + "= false;instrucciones.add("+comilla+id+"<-false"+comilla+");";
+                RESULT = id + "= false;instrucciones.add("+comilla+id+"<-false;"+comilla+");";
                :}
                |
                ID:id ASSIGN factor:f 
                {: 
                 char comilla = 34;
-                //parser.bw.write(id+" = "+f+";");
-                //parser.bw.write("instrucciones.add("+comilla+id+"<-"+f+comilla+");");
-                RESULT = id + "=" + f+";instrucciones.add("+comilla+id+"<-"+f+comilla+");";
+                RESULT = id + "=" + f+";instrucciones.add("+comilla+id+"<-"+f+";"+comilla+");";
                :}
                |
                ID:id ASSIGN MENSAJE:m 
                {: 
                 char comilla = 34;
-                //parser.bw.write(id+" = "+comilla + String.valueOf(m).substring(1, String.valueOf(m).length()-1) +comilla+";");
-                //parser.bw.write("instrucciones.add("+comilla+id+"<-"+m+comilla+");");
-                RESULT = id + "="+ comilla + String.valueOf(m).substring(1, String.valueOf(m).length()-1) +comilla+" ;instrucciones.add("+comilla+id+"<-"+m+comilla+");";
+                RESULT = id + "="+ comilla + String.valueOf(m).substring(1, String.valueOf(m).length()-1) +comilla+" ;instrucciones.add("+comilla+id+"<-"+m+";"+comilla+");";
                :}
                |
                ID:id ASSIGN llame:l
                {: 
                 char comilla = 34;
-                //parser.bw.write(id+" = "+l+";");
-                //parser.bw.write("instrucciones.add("+comilla+id+"<-"+l+comilla+");");
-                RESULT = id + "=" + l+";instrucciones.add("+comilla+id+"<-"+l+comilla+");"; 
+                RESULT = id + "=" + l+";instrucciones.add("+comilla+id+"<-"+l+";"+comilla+");"; 
                :}
                |
                ID:id ASSIGN CERO:c
                {: 
                 char comilla = 34;
-                //parser.bw.write(id+" = 0;");
-                //parser.bw.write("instrucciones.add("+comilla+id+"<-0"+comilla+");");
-                RESULT = id + "=" + c+";instrucciones.add("+comilla+id+"<-"+c+comilla+");";
+                RESULT = id + "=" + c+";instrucciones.add("+comilla+id+"<-"+c+";"+comilla+");";
                :}
                ;
 
@@ -467,8 +492,6 @@ escriba ::= ESCRIBA PARENIZQ MENSAJE:m PARENDER
                 String aux = String.valueOf(m);
                 aux = aux.substring(1,aux.length()-1);
                 char comilla = 34;
-                //parser.bw.write("resultadoConsola.add("+comilla+aux+comilla+");");
-                //parser.bw.write("instrucciones.add("+comilla+"escriba("+m+");"+comilla+");");
                 RESULT = "resultadoConsola.add("+comilla+aux+comilla+");instrucciones.add("+comilla+"escriba("+m+");"+comilla+");\n"; 
             :}
             |
@@ -477,8 +500,6 @@ escriba ::= ESCRIBA PARENIZQ MENSAJE:m PARENDER
                 String aux = String.valueOf(m);
                 aux = aux.substring(1,aux.length()-1);
                 char comilla = 34;
-                //parser.bw.write("resultadoConsola.add("+comilla+aux+comilla+"+"+i+");");
-                //parser.bw.write("instrucciones.add("+comilla+"escriba("+m+","+i+");"+comilla+");");
                 RESULT = "resultadoConsola.add("+comilla+aux+comilla+"+"+i+");instrucciones.add("+comilla+"escriba("+m+","+i+");"+comilla+");\n"; 
             :}
             |
@@ -487,50 +508,59 @@ escriba ::= ESCRIBA PARENIZQ MENSAJE:m PARENDER
                 String aux = String.valueOf(m);
                 aux = aux.substring(1,aux.length()-1);
                 char comilla = 34;
-                //parser.bw.write("resultadoConsola.add("+comilla+i+comilla+"+"+aux+");");
-                //parser.bw.write("instrucciones.add("+comilla+"escriba("+i+","+m+");"+comilla+");");
                 RESULT = "resultadoConsola.add("+i+"+"+comilla+aux+comilla+");instrucciones.add("+comilla+"escriba("+i+","+m+");"+comilla+");\n"; 
             :}
             |
             ESCRIBA PARENIZQ ID:i1 COMA ID:i2 PARENDER 
             {: 
                 char comilla = 34;
-                //parser.bw.write("resultadoConsola.add("+comilla+i1+comilla+"+"+i2+");");
-                //parser.bw.write("instrucciones.add("+comilla+"escriba("+i1+","+i2+");"+comilla+");");
                 RESULT = "resultadoConsola.add("+i1+"+"+comilla+","+comilla+"+"+i2+");instrucciones.add("+comilla+"escriba("+i1+","+i2+");"+comilla+");\n"; 
             :}
             |
             ESCRIBA PARENIZQ ID:i PARENDER 
             {: 
                 char comilla = 34;
-                //parser.bw.write("resultadoConsola.add("+comilla+i+comilla+");");
-                //parser.bw.write("instrucciones.add("+comilla+"escriba("+i+");"+comilla+");");
                 RESULT = "resultadoConsola.add("+comilla+i+comilla+");instrucciones.add("+comilla+"escriba("+i+");"+comilla+");\n";
             :}
             ;
 
 llame ::= LLAME PARENIZQ ID:i PARENIZQ paramsllame:p PARENDER PARENDER 
           {:
-            RESULT = i+" ("+p+" );"; 
+            char comilla = 34;
+            String[] aux = String.valueOf(p).split("'");
+            System.out.println("AUXXXX: "+Arrays.toString(aux));
+            System.out.println("\nPARAMSSSS: "+String.valueOf(p));
+            //System.out.println("\nPARAMS: "+Arrays.toString(aux.length));
+            if(aux.length == 1){
+                RESULT = "instrucciones.add("+comilla+"llame("+i+"("+p+"));"+comilla+");"+i+" ("+p+" );";  
+            }else{
+                RESULT = "instrucciones.add("+comilla+"llame("+i+"("+p+"));"+comilla+");"+i+" ("+aux[0]+comilla+aux[1]+comilla+" );";  
+            }
+             
           :}
           |
           LLAME PARENIZQ ID:i PARENIZQ PARENDER PARENDER 
           {:
-            RESULT = i+"();"; 
+            char comilla = 34;
+            RESULT = "instrucciones.add("+comilla+"llame("+i+"());"+comilla+");"+i+"();"; 
           :}
           ;
 
-paramsllame ::= paramsllame:ps COMA paramllame:p {: RESULT=ps+" , "+p; :} | paramllame:p {: RESULT=p; :};
+paramsllame ::= paramsllame:ps COMA paramllame:p {: RESULT=ps+", "+p; :} | paramllame:p {: RESULT=p; :};
 
-paramllame ::= numero:n {: RESULT=n; :} | ID:i {: RESULT=i; :};
+paramllame ::= numero:n {: RESULT=n; :} 
+            | ID:i {: RESULT=i; :} 
+            | TRUE {: RESULT="true"; :} 
+            | FALSE {: RESULT="false"; :} 
+            | MENSAJE:m {: char comilla = 34;  RESULT= m; :};
 
 para ::= FOR asignacion:a TO NUM:n DOSP operaciones:o ENDFOR
          {: 
             String[] var = String.valueOf(a).split("=");
+            System.out.println(var[1]);
+            String[] val = var[1].split(";");
             char comilla = 34;
-            //parser.bw.write("for( "+a+" ; "+var[0].trim()+" <= "+n+" ; "+var[0].trim()+" ++){ ");
-            //parser.bw.write("instrucciones.add("+comilla+"escriba("+i+");"+comilla+");");
-            //RESULT = "for( "+a+" ; "+var[0].trim()+" <= "+n+" ; "+var[0].trim()+" ++){ "+o+" }"; 
+            RESULT = "for( "+var[0].trim()+"="+val[0].trim()+" ; "+var[0].trim()+" <= "+n+" ; "+var[0].trim()+" ++){ instrucciones.add("+comilla+"for "+var[0].trim()+"<-"+val[0].trim()+" to "+n+":"+comilla+");"+o+" }"; 
          :}
          |
          FOR asignacion:a TO ID:i DOSP operaciones:o ENDFOR
@@ -539,11 +569,8 @@ para ::= FOR asignacion:a TO NUM:n DOSP operaciones:o ENDFOR
             System.out.println(var[1]);
             String[] val = var[1].split(";");
             char comilla = 34;
-            //parser.bw.write("for( "+a+" ; "+var[0].trim()+" <= "+i+" ; "+var[0].trim()+" ++){");
-            //parser.bw.write("instrucciones.add("+comilla+"for "+var[0].trim()+"<-"+var[1].trim()+" to "+i+":"+comilla+");");
-            //parser.bw.write(o+" }");
-            //parser.bw.write("instrucciones.add("+comilla+"for "+var[0].trim()+"<-"+var[1].trim()+" to "+i+":"+comilla+");");
-            RESULT = "instrucciones.add("+comilla+"for "+var[0].trim()+"<-"+val[0].trim()+" to "+i+":"+comilla+");for( "+var[0].trim()+"="+val[0].trim()+" ; "+var[0].trim()+" <= "+i+" ; "+var[0].trim()+" ++){ instrucciones.add("+comilla+"for "+var[0].trim()+"<-"+val[0].trim()+" to "+i+":"+comilla+");"+o+" }"; 
+            //instrucciones.add("+comilla+"for "+var[0].trim()+"<-"+val[0].trim()+" to "+i+":"+comilla+");
+            RESULT = "for( "+var[0].trim()+"="+val[0].trim()+" ; "+var[0].trim()+" <= "+i+" ; "+var[0].trim()+" ++){ instrucciones.add("+comilla+"for "+var[0].trim()+"<-"+val[0].trim()+" to "+i+":"+comilla+");"+o+" }instrucciones.add("+comilla+"for "+var[0].trim()+"<-"+val[0].trim()+" to "+i+":"+comilla+");instrucciones.add("+comilla+"endfor"+comilla+");"; 
          :}
          ;
 

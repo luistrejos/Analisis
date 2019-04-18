@@ -45,6 +45,11 @@ public class VistaPrincipal extends javax.swing.JFrame {
         this.txtAlgoritmo.setEditable(false);
         this.txtConsola.setEditable(false);
         this.tblSeguimiento.setModel(modelo);
+        this.txtConsola.setText("");
+        for (String string : p.resultadoConsola) {
+            this.txtConsola.append(string + "\n");
+        }
+        System.out.println(p.instrucciones);
     }
 
     private void LeerAlgoritmo() throws FileNotFoundException, IOException {
@@ -59,7 +64,6 @@ public class VistaPrincipal extends javax.swing.JFrame {
             instruccion = new String[2];
             instruccion[0] = linea;
             instruccion[1] = String.valueOf(pos);
-            //System.out.println("Guardando: " + Arrays.toString(instruccion));
             instrucciones.add(instruccion);
             pos += linea.length() + 1;
             this.txtAlgoritmo.append(linea + "\n");
@@ -206,21 +210,37 @@ public class VistaPrincipal extends javax.swing.JFrame {
         // TODO add your handling code here:
         //String[] row = {"f", String.valueOf(p.linea)};
         //modelo.addRow(row)
-        this.txtConsola.setText("");
-        for (String string : p.resultadoConsola) {
-            this.txtConsola.append(string + "\n");
-        }
-        System.out.println(p.instrucciones);
+        
     }//GEN-LAST:event_btnAutomaticoActionPerformed
 
     int cont = 0;
     private void btnPasoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnPasoActionPerformed
         // TODO add your handling code here:
-        String[] i;
-        if (cont < instrucciones.size() && (i = instrucciones.get(cont)) != null) {
-            SubRayar(Integer.valueOf(i[1]), i[0].length());
+        String i;
+        if (cont < p.instrucciones.size() && (i = p.instrucciones.get(cont)) != null) {
+            for (String[] aux : instrucciones) {
+                if (aux[0].trim().equals(i)) {
+                    SubRayar(Integer.valueOf(aux[1]), aux[0].length());                    
+                }
+            }
             cont++;
         }
+        
+        /*String[] i;
+        if (cont < instrucciones.size() && (i = instrucciones.get(cont)) != null) {
+            System.out.println("Cont: "+cont);
+            for (String instruccion : p.instrucciones) {
+                if (i[0].trim().equals(instruccion)) {
+                    SubRayar(Integer.valueOf(i[1]), i[0].length());
+                    if(instruccion.contains("for")){
+                        cont--;
+                        break;
+                    }
+                    
+                }
+            }
+            cont++;
+        }*/
     }//GEN-LAST:event_btnPasoActionPerformed
 
     private void SubRayar(int pos, int fin) {
