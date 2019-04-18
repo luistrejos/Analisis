@@ -1,8 +1,13 @@
+procedure imprimir(){
+  escriba('hey');
+}
+
 main{
   int n;
   int i;
+  int[6] f;
   n<-5;
   for i<-0 to n:
-    escriba('hola');
+    escriba('hola',i);
   endfor
 }

@@ -6,12 +6,12 @@
 package ejecucion;
 
 import java.awt.Color;
-import java.awt.List;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.logging.Level;
@@ -30,35 +30,40 @@ public class VistaPrincipal extends javax.swing.JFrame {
     Object[][] data;
     String[] columnNames = {"Variable", "Valor"};
     DefaultTableModel modelo = new DefaultTableModel(data, columnNames);
+    LinkedList<String[]> instrucciones = new LinkedList();
+    Programa p = new Programa();
 
     /**
      * Creates new form VistaPrincipal
      *
      * @throws java.io.FileNotFoundException
      */
-    public VistaPrincipal() throws FileNotFoundException {
+    public VistaPrincipal() throws FileNotFoundException, IOException {
         initComponents();
-        try {
-            BufferedReader br = LeerArchivo();
-
-            // Lectura del fichero
-            String linea;
-            while ((linea = br.readLine()) != null) {
-                this.txtAlgoritmo.append(linea + "\n");
-            }
-        } catch (IOException e) {
-        }
-
+        LeerAlgoritmo();
+        p.main();
         this.txtAlgoritmo.setEditable(false);
+        this.txtConsola.setEditable(false);
         this.tblSeguimiento.setModel(modelo);
-
     }
 
-    private BufferedReader LeerArchivo() throws FileNotFoundException {
+    private void LeerAlgoritmo() throws FileNotFoundException, IOException {
         File archivo = new File("src/ejecucion/algoritmo.txt");
         FileReader fr = new FileReader(archivo);
         BufferedReader br = new BufferedReader(fr);
-        return br;
+        // Lectura del fichero
+        String linea;
+        String[] instruccion;
+        int pos = 0;
+        while ((linea = br.readLine()) != null) {
+            instruccion = new String[2];
+            instruccion[0] = linea;
+            instruccion[1] = String.valueOf(pos);
+            //System.out.println("Guardando: " + Arrays.toString(instruccion));
+            instrucciones.add(instruccion);
+            pos += linea.length() + 1;
+            this.txtAlgoritmo.append(linea + "\n");
+        }
     }
 
     /**
@@ -71,7 +76,7 @@ public class VistaPrincipal extends javax.swing.JFrame {
     private void initComponents() {
 
         jScrollPane1 = new javax.swing.JScrollPane();
-        txtAlgoritmo = new javax.swing.JTextArea();
+        txtConsola = new javax.swing.JTextArea();
         jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
         jSeparator1 = new javax.swing.JSeparator();
@@ -80,12 +85,16 @@ public class VistaPrincipal extends javax.swing.JFrame {
         tblSeguimiento = new javax.swing.JTable();
         btnAutomatico = new javax.swing.JButton();
         btnPaso = new javax.swing.JButton();
+        jSeparator2 = new javax.swing.JSeparator();
+        jScrollPane3 = new javax.swing.JScrollPane();
+        txtAlgoritmo = new javax.swing.JTextArea();
+        jLabel4 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
-        txtAlgoritmo.setColumns(20);
-        txtAlgoritmo.setRows(5);
-        jScrollPane1.setViewportView(txtAlgoritmo);
+        txtConsola.setColumns(20);
+        txtConsola.setRows(5);
+        jScrollPane1.setViewportView(txtConsola);
 
         jLabel1.setText("Seguimiento");
 
@@ -122,6 +131,14 @@ public class VistaPrincipal extends javax.swing.JFrame {
             }
         });
 
+        jSeparator2.setOrientation(javax.swing.SwingConstants.VERTICAL);
+
+        txtAlgoritmo.setColumns(20);
+        txtAlgoritmo.setRows(5);
+        jScrollPane3.setViewportView(txtAlgoritmo);
+
+        jLabel4.setText("Consola");
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -129,9 +146,9 @@ public class VistaPrincipal extends javax.swing.JFrame {
             .addGroup(layout.createSequentialGroup()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addContainerGap()
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 240, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGap(6, 6, 6)
+                        .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 240, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 12, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -139,19 +156,23 @@ public class VistaPrincipal extends javax.swing.JFrame {
                                 .addComponent(btnAutomatico)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(btnPaso))
-                            .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 231, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                            .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 231, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(jSeparator2, javax.swing.GroupLayout.PREFERRED_SIZE, 12, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 240, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(layout.createSequentialGroup()
                         .addGap(316, 316, 316)
-                        .addComponent(jLabel2))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(351, 351, 351)
-                        .addComponent(jLabel1)))
-                .addContainerGap(326, Short.MAX_VALUE))
-            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addGroup(layout.createSequentialGroup()
-                    .addGap(51, 51, 51)
-                    .addComponent(jLabel3)
-                    .addContainerGap(612, Short.MAX_VALUE)))
+                        .addComponent(jLabel2)))
+                .addContainerGap(56, Short.MAX_VALUE))
+            .addGroup(layout.createSequentialGroup()
+                .addGap(44, 44, 44)
+                .addComponent(jLabel3)
+                .addGap(137, 137, 137)
+                .addComponent(jLabel1)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jLabel4)
+                .addGap(152, 152, 152))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -159,23 +180,23 @@ public class VistaPrincipal extends javax.swing.JFrame {
                 .addContainerGap()
                 .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 27, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
-                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 27, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 27, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 27, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 27, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(jSeparator1)
                     .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 268, Short.MAX_VALUE)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                         .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
-                        .addGap(18, 18, 18)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(btnAutomatico)
-                            .addComponent(btnPaso))))
+                            .addComponent(btnPaso)))
+                    .addComponent(jSeparator2)
+                    .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 268, Short.MAX_VALUE))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addGroup(layout.createSequentialGroup()
-                    .addGap(67, 67, 67)
-                    .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 27, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addContainerGap(276, Short.MAX_VALUE)))
         );
 
         pack();
@@ -183,57 +204,30 @@ public class VistaPrincipal extends javax.swing.JFrame {
 
     private void btnAutomaticoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAutomaticoActionPerformed
         // TODO add your handling code here:
-        String[] row = {"f", "4"};
-        modelo.addRow(row);
-        System.out.println(mapa);
+        //String[] row = {"f", String.valueOf(p.linea)};
+        //modelo.addRow(row)
+        this.txtConsola.setText("");
+        for (String string : p.resultadoConsola) {
+            this.txtConsola.append(string + "\n");
+        }
+        System.out.println(p.instrucciones);
     }//GEN-LAST:event_btnAutomaticoActionPerformed
 
-    boolean b = true;
-    BufferedReader br = null;
-    HashMap<String, Integer> mapa = new HashMap();
-    int pos = 0;
-    
+    int cont = 0;
     private void btnPasoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnPasoActionPerformed
         // TODO add your handling code here:
-
-        if (b) {
-            try {
-                br = LeerArchivo();
-                b = false;
-                String l = br.readLine();
-                mapa.put(l, pos);
-                SubRayar(pos, l.length());
-                System.out.println(l + " : [" + pos+" , "+l.length()+"]");
-                pos = l.length() +1;
-                
-            } catch (FileNotFoundException ex) {
-                Logger.getLogger(VistaPrincipal.class.getName()).log(Level.SEVERE, null, ex);
-            } catch (IOException ex) {
-                Logger.getLogger(VistaPrincipal.class.getName()).log(Level.SEVERE, null, ex);
-            }
-        } else {
-            String linea;
-            try {
-                if ((linea = br.readLine()) != null) {
-                    mapa.put(linea, pos);
-                    SubRayar(pos, linea.length());
-                    System.out.println(linea + " : [" + pos+" , "+linea.length()+"]");
-                    pos += linea.length() +1;                    
-                }
-            } catch (IOException ex) {
-                Logger.getLogger(VistaPrincipal.class.getName()).log(Level.SEVERE, null, ex);
-            }
+        String[] i;
+        if (cont < instrucciones.size() && (i = instrucciones.get(cont)) != null) {
+            SubRayar(Integer.valueOf(i[1]), i[0].length());
+            cont++;
         }
-
-
     }//GEN-LAST:event_btnPasoActionPerformed
 
     private void SubRayar(int pos, int fin) {
         Highlighter h = this.txtAlgoritmo.getHighlighter();
         h.removeAllHighlights();
         try {
-            h.addHighlight(pos, pos+fin, new DefaultHighlighter.DefaultHighlightPainter(Color.CYAN));
-            //this.txtAlgoritmo.getHighlighter().add
+            h.addHighlight(pos, pos + fin, new DefaultHighlighter.DefaultHighlightPainter(Color.CYAN));
         } catch (BadLocationException e) {
         }
     }
@@ -272,6 +266,8 @@ public class VistaPrincipal extends javax.swing.JFrame {
                     new VistaPrincipal().setVisible(true);
                 } catch (FileNotFoundException ex) {
                     Logger.getLogger(VistaPrincipal.class.getName()).log(Level.SEVERE, null, ex);
+                } catch (IOException ex) {
+                    Logger.getLogger(VistaPrincipal.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
         });
@@ -283,10 +279,14 @@ public class VistaPrincipal extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel4;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JSeparator jSeparator1;
+    private javax.swing.JSeparator jSeparator2;
     private javax.swing.JTable tblSeguimiento;
     private javax.swing.JTextArea txtAlgoritmo;
+    private javax.swing.JTextArea txtConsola;
     // End of variables declaration//GEN-END:variables
 }
