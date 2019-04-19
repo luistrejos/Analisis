@@ -1,25 +1,8 @@
-procedure imprimir(in int p, out boolean b, in boolean s):
-  int h;
-  float j;
-  boolean o;
-  String e;
-  escriba('hey');
-  llame(imprimir2(3, 4));
-endprocedure
-
-function imprimir2(in int y, out float d)->int:
-  escriba('heyii');
-  return 9;
-endfunction
-
 main{
   int n;
-  int i;
-  int[6] f;
   n<-2;
   for i<-0 to n:
     escriba('hola',i);
   endfor
   escriba('Fin algoritmo');
-  llame(imprimir(8, true, false));
 }
