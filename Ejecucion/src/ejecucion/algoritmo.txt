@@ -4,5 +4,14 @@ main{
   for i<-0 to n:
     escriba('hola',i);
   endfor
+  if(n<1):
+    n<-8;
+  else
+    n<-3;
+  endif
+  repeat:
+    escriba('repeattt');
+    n<-(n-1);
+  while(n>0);
   escriba('Fin algoritmo');
 }

@@ -6,16 +6,19 @@
 package ejecucion;
 
 import java.awt.Color;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JTextArea;
+import javax.swing.Timer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.DefaultHighlighter;
@@ -30,8 +33,14 @@ public class VistaPrincipal extends javax.swing.JFrame {
     Object[][] data;
     String[] columnNames = {"Variable", "Valor"};
     DefaultTableModel modelo = new DefaultTableModel(data, columnNames);
-    LinkedList<String[]> instrucciones = new LinkedList();
+    Object[][] data2;
+    String[] columnNames2 = {"Cant"};
+    DefaultTableModel modelo2 = new DefaultTableModel(data2, columnNames2);
+    LinkedList<String[]> instrucciones = new LinkedList<>();
     Programa p = new Programa();
+    String[] varTable = new String[2];
+    LinkedList<Integer> cantidadEjecucion = new LinkedList<>();
+    LinkedList<Integer> indiceInicioLinea = new LinkedList<>();
 
     /**
      * Creates new form VistaPrincipal
@@ -42,6 +51,8 @@ public class VistaPrincipal extends javax.swing.JFrame {
         initComponents();
         LeerAlgoritmo();
         p.main();
+        this.btnAutomatico.setEnabled(false);
+        this.btnPaso.setEnabled(false);
         this.txtAlgoritmo.setEditable(false);
         this.txtConsola.setEditable(false);
         this.tblSeguimiento.setModel(modelo);
@@ -49,7 +60,23 @@ public class VistaPrincipal extends javax.swing.JFrame {
         for (String string : p.resultadoConsola) {
             this.txtConsola.append(string + "\n");
         }
-        System.out.println(p.instrucciones);
+        for (String variable : p.variables) {
+            String[] var = variable.split("<-");
+        }
+
+        int contAux = 0;
+        for (int i = 0; i < instrucciones.size(); i++) {
+            for (int j = 0; j < p.instrucciones.size(); j++) {
+                if (instrucciones.get(i)[0].trim().equals(p.instrucciones.get(j))) {
+                    contAux++;
+                }
+            }
+            String[] row = {"0"};
+            modelo2.addRow(row);
+            cantidadEjecucion.add(contAux);
+            //System.out.println(instrucciones.get(i)[0]+" : "+contAux);
+            contAux = 0;
+        }
     }
 
     private void LeerAlgoritmo() throws FileNotFoundException, IOException {
@@ -61,9 +88,10 @@ public class VistaPrincipal extends javax.swing.JFrame {
         String[] instruccion;
         int pos = 0;
         while ((linea = br.readLine()) != null) {
-            instruccion = new String[2];
+            instruccion = new String[3];
             instruccion[0] = linea;
             instruccion[1] = String.valueOf(pos);
+            instruccion[2] = "0";
             instrucciones.add(instruccion);
             pos += linea.length() + 1;
             this.txtAlgoritmo.append(linea + "\n");
@@ -93,6 +121,9 @@ public class VistaPrincipal extends javax.swing.JFrame {
         jScrollPane3 = new javax.swing.JScrollPane();
         txtAlgoritmo = new javax.swing.JTextArea();
         jLabel4 = new javax.swing.JLabel();
+        jScrollPane4 = new javax.swing.JScrollPane();
+        txtValores = new javax.swing.JTextArea();
+        btnDebug = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -143,40 +174,61 @@ public class VistaPrincipal extends javax.swing.JFrame {
 
         jLabel4.setText("Consola");
 
+        txtValores.setColumns(20);
+        txtValores.setRows(5);
+        txtValores.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                txtValoresKeyReleased(evt);
+            }
+        });
+        jScrollPane4.setViewportView(txtValores);
+
+        btnDebug.setText("Reiniciar paso a paso");
+        btnDebug.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnDebugActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(68, 68, 68)
-                .addComponent(jLabel3)
-                .addGap(189, 189, 189)
-                .addComponent(jLabel1)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jLabel4)
-                .addGap(129, 129, 129))
-            .addGroup(layout.createSequentialGroup()
-                .addGap(6, 6, 6)
-                .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 308, Short.MAX_VALUE)
-                .addGap(18, 18, 18)
-                .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 12, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(36, 36, 36)
-                        .addComponent(btnAutomatico)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(btnPaso))
+                        .addGap(410, 410, 410)
+                        .addComponent(jLabel2))
                     .addGroup(layout.createSequentialGroup()
+                        .addGap(50, 50, 50)
+                        .addComponent(jLabel3)
+                        .addGap(229, 229, 229)
+                        .addComponent(jLabel1)
+                        .addGap(265, 265, 265)
+                        .addComponent(jLabel4))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(6, 6, 6)
+                        .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 265, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 261, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jSeparator2, javax.swing.GroupLayout.PREFERRED_SIZE, 12, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 296, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap())
-            .addGroup(layout.createSequentialGroup()
-                .addGap(410, 410, 410)
-                .addComponent(jLabel2)
+                        .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, 54, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 12, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(layout.createSequentialGroup()
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 261, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(layout.createSequentialGroup()
+                                .addGap(31, 31, 31)
+                                .addComponent(btnAutomatico)
+                                .addGap(32, 32, 32)
+                                .addComponent(btnPaso))
+                            .addGroup(layout.createSequentialGroup()
+                                .addGap(54, 54, 54)
+                                .addComponent(btnDebug)))
+                        .addGap(18, 18, Short.MAX_VALUE)
+                        .addComponent(jSeparator2, javax.swing.GroupLayout.PREFERRED_SIZE, 12, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 296, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
@@ -184,25 +236,33 @@ public class VistaPrincipal extends javax.swing.JFrame {
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 27, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 27, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 27, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 27, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                        .addGroup(layout.createSequentialGroup()
-                            .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 520, Short.MAX_VALUE)
-                            .addGap(12, 12, 12)
-                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                .addComponent(btnAutomatico)
-                                .addComponent(btnPaso)))
-                        .addComponent(jScrollPane3)
-                        .addComponent(jSeparator2)
-                        .addComponent(jScrollPane1))
-                    .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 554, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(18, 18, 18)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 27, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 27, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
+                                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 514, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                    .addComponent(btnPaso)
+                                    .addComponent(btnAutomatico))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(btnDebug))
+                            .addComponent(jSeparator2)
+                            .addComponent(jScrollPane3)
+                            .addComponent(jScrollPane4, javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jSeparator1))
+                        .addContainerGap())
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(16, 16, 16)
+                        .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 27, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jScrollPane1)
+                        .addGap(62, 62, 62))))
         );
 
         pack();
@@ -212,38 +272,88 @@ public class VistaPrincipal extends javax.swing.JFrame {
         // TODO add your handling code here:
         //String[] row = {"f", String.valueOf(p.linea)};
         //modelo.addRow(row)
-        
+
+        Timer timer;
+        timer = new Timer(100, new ActionListener() {
+            int cont2 = 0;
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String i;
+                if (cont2 < p.instrucciones.size() && (i = p.instrucciones.get(cont2)) != null) {
+                    for (String[] aux : instrucciones) {
+                        if (aux[0].trim().equals(i)) {
+                            SubRayar(Integer.valueOf(aux[1]), aux[0].length());
+                        }
+                    }
+                    cont2++;
+                }
+                if (cont2 >= p.instrucciones.size()) {
+                    ResaltarMalCalculo();
+                    compararCalculoEstudiante();
+                }
+            }
+        });
+        timer.start();
+
+
     }//GEN-LAST:event_btnAutomaticoActionPerformed
 
     int cont = 0;
     private void btnPasoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnPasoActionPerformed
-        // TODO add your handling code here:
+        // TODO add your handling code here
+        if (cont == 0) {
+            this.txtValores.getHighlighter().removeAllHighlights();
+        }
         String i;
         if (cont < p.instrucciones.size() && (i = p.instrucciones.get(cont)) != null) {
             for (String[] aux : instrucciones) {
                 if (aux[0].trim().equals(i)) {
-                    SubRayar(Integer.valueOf(aux[1]), aux[0].length());                    
+                    SubRayar(Integer.valueOf(aux[1]), aux[0].length());
                 }
             }
             cont++;
         }
-        
-        /*String[] i;
-        if (cont < instrucciones.size() && (i = instrucciones.get(cont)) != null) {
-            System.out.println("Cont: "+cont);
-            for (String instruccion : p.instrucciones) {
-                if (i[0].trim().equals(instruccion)) {
-                    SubRayar(Integer.valueOf(i[1]), i[0].length());
-                    if(instruccion.contains("for")){
-                        cont--;
-                        break;
-                    }
-                    
-                }
-            }
-            cont++;
-        }*/
+
+        // Se termina de leer las lines del programa
+        // es decir ya no hay más lineas por ejecutar
+        if (cont >= p.instrucciones.size()) {
+            ResaltarMalCalculo();
+            compararCalculoEstudiante();
+            this.btnPaso.setEnabled(false);
+        }
     }//GEN-LAST:event_btnPasoActionPerformed
+
+    private void btnDebugActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDebugActionPerformed
+        // TODO add your handling code here:
+        cont = 0;
+        this.btnPaso.setEnabled(true);
+        this.btnAutomatico.setEnabled(true);
+        this.txtAlgoritmo.getHighlighter().removeAllHighlights();
+        this.txtValores.getHighlighter().removeAllHighlights();
+    }//GEN-LAST:event_btnDebugActionPerformed
+
+    private void txtValoresKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtValoresKeyReleased
+        // TODO add your handling code here:
+        if (instrucciones.size() == txtValores.getText().split("\n").length) {
+            this.btnAutomatico.setEnabled(true);
+            this.btnPaso.setEnabled(true);
+        }else{
+            this.btnAutomatico.setEnabled(false);
+            this.btnPaso.setEnabled(false);
+        }
+    }//GEN-LAST:event_txtValoresKeyReleased
+
+    private void ResaltarMalCalculo() {
+        String split[] = this.txtValores.getText().split("\n");
+        String area = this.txtValores.getText();
+        indiceInicioLinea.add(1);
+        for (int i = 1; i < area.length(); i++) {
+            if (area.charAt(i) == '\n') {
+                indiceInicioLinea.add(i + 1);
+            }
+        }
+    }
 
     private void SubRayar(int pos, int fin) {
         Highlighter h = this.txtAlgoritmo.getHighlighter();
@@ -251,6 +361,26 @@ public class VistaPrincipal extends javax.swing.JFrame {
         try {
             h.addHighlight(pos, pos + fin, new DefaultHighlighter.DefaultHighlightPainter(Color.CYAN));
         } catch (BadLocationException e) {
+        }
+    }
+
+    private void SubRayar2(int pos, int fin) {
+        Highlighter h = this.txtValores.getHighlighter();
+        //h.removeAllHighlights();
+        try {
+            h.addHighlight(pos, pos + fin, new DefaultHighlighter.DefaultHighlightPainter(Color.RED));
+        } catch (BadLocationException e) {
+        }
+    }
+
+    private void compararCalculoEstudiante() {
+        String[] valores = this.txtValores.getText().split("\n");
+        for (int i = 0; i < valores.length; i++) {
+            int letraCadena = Integer.valueOf(valores[i]);
+            if (letraCadena != cantidadEjecucion.get(i)) {
+                /// aca falta el el fin donde termina de resaltar
+                SubRayar2(indiceInicioLinea.get(i), 1);
+            }
         }
     }
 
@@ -297,6 +427,7 @@ public class VistaPrincipal extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnAutomatico;
+    private javax.swing.JButton btnDebug;
     private javax.swing.JButton btnPaso;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
@@ -305,10 +436,12 @@ public class VistaPrincipal extends javax.swing.JFrame {
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
+    private javax.swing.JScrollPane jScrollPane4;
     private javax.swing.JSeparator jSeparator1;
     private javax.swing.JSeparator jSeparator2;
     private javax.swing.JTable tblSeguimiento;
     private javax.swing.JTextArea txtAlgoritmo;
     private javax.swing.JTextArea txtConsola;
+    private javax.swing.JTextArea txtValores;
     // End of variables declaration//GEN-END:variables
 }

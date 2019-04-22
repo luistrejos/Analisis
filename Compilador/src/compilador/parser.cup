@@ -30,9 +30,10 @@ parser code {:
         archivoPrograma = new File(Programa);
 
         this.bw = new BufferedWriter(new FileWriter(archivoPrograma));
-        bw.write("package ejecucion;\n\nimport java.util.LinkedList;\n\npublic class " + nombrePrograma + "{\n\n");
-        bw.write("LinkedList<String> instrucciones = new LinkedList();\nLinkedList<String> resultadoConsola = new LinkedList();\n\n");
-        //bw.write("public void main(){");
+        this.bw.write("package ejecucion;\n\nimport java.util.LinkedList;\n\npublic class " + nombrePrograma + "{\n\n");
+        this.bw.write("LinkedList<String> instrucciones = new LinkedList();\n");
+        this.bw.write("LinkedList<String> resultadoConsola = new LinkedList();\n");
+        this.bw.write("LinkedList<String> variables = new LinkedList();\n\n");
     }
 
     /* Change the method report_error so it will display the line and
@@ -98,95 +99,6 @@ parser code {:
         bw.close();
     }
 
-    //Bandera para saber si el algoritmo está bien escrito
-    boolean bienEscrito = false;
-
-    /*Método que indica si el algoritmo fué bien escrito*/
-    public void FinAlgoritmo(Object vs, Object s, Object vs2, Object o) throws IOException {
-        if (bienEscrito) {
-            JOptionPane.showMessageDialog(null, "Algoritmo bien escrito");
-            if(vs != null){
-                TraducirVariables(String.valueOf(vs),true);
-            }
-            if(s != null){
-                TraducirSubprograma(String.valueOf(s));
-            }
-            bw.write("LinkedList<String> resultadoConsola = new LinkedList(); LinkedList<String> instrucciones = new LinkedList();");
-            //bw.write("public void main(){\n");
-            if(vs2 != null){
-                TraducirVariables(String.valueOf(vs2),false);
-            }
-            if(o != null){
-                TraducirSubprograma(String.valueOf(o));
-            }  
-            bw.write("}");//Cierra la main
-            bw.write("}");//Cierra la clase
-            ejecutar = true;
-            CerrarArchivo();
-        } else {
-            report_error("Algoritmo mal escrito", null);
-            System.exit(1);
-        }
-    }
-
-    /*Método para traducir subprogramas*/
-    private void TraducirSubprograma(String s) throws IOException {
-        String[] sp = s.split(" ");
-        int n = -1;
-        for (int i = 0; i < sp.length; i++) {
-            if ((sp[i].endsWith("int") || sp[i].endsWith("boolean") || sp[i].endsWith("float") || sp[i].endsWith("String"))
-                    && !sp[i].contains("(")) {
-                if (!sp[i + 1].contains("(") && !sp[i + 1].endsWith("int") && !sp[i + 1].endsWith("boolean") && !sp[i + 1].endsWith("float") && !sp[i + 1].endsWith("String")) {
-                    sp[i + 1] = sp[i + 1] + ";";
-                }
-            }
-            if (sp[i].contains("[")) {
-                n = i + 1;
-                TraducirVariables(sp[i] + " " + sp[i + 1], false);
-            } else {
-                if (i != n) {
-                    bw.write(" " + sp[i]);
-                }
-            }
-
-        }
-    }
-
-    /*Método para traducir variables*/
-    private void TraducirVariables(String v, boolean b) throws IOException {
-        String[] vars = v.split(" ");
-        String st = "";
-        if (b) {
-            st = "static ";
-        }
-        for (int i = 0; i < vars.length; i += 2) {
-            if (vars[i].contains("[")) {
-                String[] aux = vars[i].split("\\[");
-                String n = aux[1].substring(0, aux[1].length() - 1);
-                if (!n.equals("")) {
-                    switch (aux[0]) {
-                        case "int":
-                            bw.write(st+"int[] " + vars[i + 1] + "= new int[" + n + "];\n");
-                            break;
-                        case "float":
-                            bw.write(st+"float[] " + vars[i + 1] + "= new float[" + n + "];\n");
-                            break;
-                        case "boolean":
-                            bw.write(st+"boolean[] " + vars[i + 1] + "= new boolean[" + n + "];\n");
-                            break;
-                        case "String":
-                            bw.write(st+"String[] " + vars[i + 1] + "= new String[" + n + "];\n");
-                            break;
-                    }
-                } else {
-                    bw.write(v);
-                }
-            } else {
-                bw.write(st + vars[i] + " " + vars[i + 1] + ";\n");
-            }
-        }
-    }
-
 :};
    
 
@@ -249,14 +161,31 @@ precedence left ASSIGN;
 /* ----------------------------Grammar Section-------------------- */
 
 program ::= variables:vs subprogramas:s MAIN CORCHIZQ variables:vs2 operaciones:o CORCHDER 
-            {:
-             parser.bw.write("}}");
+            {: 
+             JOptionPane.showMessageDialog(null, "Algoritmo bien escrito");
+             char comilla = 34;
+             parser.bw.write(String.valueOf(vs));
+             parser.bw.write(String.valueOf(s));
+             parser.bw.write("public void main(){\n");
+             parser.bw.write("instrucciones.add("+comilla+"main{"+comilla+");");   
+             parser.bw.write(String.valueOf(vs2));
+             parser.bw.write(String.valueOf(o));
+             parser.bw.write("instrucciones.add("+comilla+"}"+comilla+");}");
+             parser.bw.write("}");
              parser.CerrarArchivo();
             :}
             |
             variables:v subprogramas:s MAIN CORCHIZQ operaciones:o CORCHDER
-            {:             
-             parser.bw.write("}}");
+            {: 
+             JOptionPane.showMessageDialog(null, "Algoritmo bien escrito");
+             char comilla = 34;
+             parser.bw.write(String.valueOf(v));
+             parser.bw.write(String.valueOf(s));
+             parser.bw.write("public void main(){\n");
+             parser.bw.write("instrucciones.add("+comilla+"main{"+comilla+");");             
+             parser.bw.write(String.valueOf(o));
+             parser.bw.write("instrucciones.add("+comilla+"}"+comilla+");}");
+             parser.bw.write("}");
              parser.CerrarArchivo();
             :}
             |
@@ -342,7 +271,7 @@ funcion ::= FUNCTION ID:i PARENIZQ parametros:p PARENDER RET type:t DOSP variabl
              cabP = cabP +aux[ap] +" "+aux[ap+1] +" "+aux[ap+2].split(";")[0];
              cabJ = cabJ +aux[ap+1] +" "+aux[ap+2].split(";")[0];
              String[] aux2 = aux[2].split(";");
-             RESULT = "public "+t+" "+i+"("+cabJ+"){instrucciones.add("+comilla+"function "+i+"("+cabP+")->"+t+":"+comilla+");"+v+o+"instrucciones.add("+comilla+r+";"+comilla+");instrucciones.add("+comilla+"endfunction"+comilla+");"+r+";}\n\n";  
+             RESULT = "public "+t+" "+i+"("+cabJ+"){instrucciones.add("+comilla+"function "+i+"("+cabP+")->"+t+":"+comilla+");"+v+o+r+";}\n\n";  
             :}
             |
             FUNCTION ID:i PARENIZQ parametros:p PARENDER RET type:t DOSP operaciones:o retorne:r ENDFUNCTION 
@@ -361,19 +290,19 @@ funcion ::= FUNCTION ID:i PARENIZQ parametros:p PARENDER RET type:t DOSP variabl
              cabP = cabP +aux[ap] +" "+aux[ap+1] +" "+aux[ap+2].split(";")[0];
              cabJ = cabJ +aux[ap+1] +" "+aux[ap+2].split(";")[0];
              String[] aux2 = aux[2].split(";");
-             RESULT = "public "+t+" "+i+"("+cabJ+"){instrucciones.add("+comilla+"function "+i+"("+cabP+")->"+t+":"+comilla+");"+o+"instrucciones.add("+comilla+r+";"+comilla+");instrucciones.add("+comilla+"endfunction"+comilla+");"+r+";}\n\n";  
+             RESULT = "public "+t+" "+i+"("+cabJ+"){instrucciones.add("+comilla+"function "+i+"("+cabP+")->"+t+":"+comilla+");"+o+r+";}\n\n";  
             :}
             |
             FUNCTION ID:i PARENIZQ PARENDER RET type:t DOSP variables:v operaciones:o retorne:r ENDFUNCTION 
             {: 
              char comilla = 34;
-             RESULT = "public "+t+" "+i+"( ){instrucciones.add("+comilla+"function "+i+"()->"+t+":"+comilla+");"+v+" "+o+"instrucciones.add("+comilla+r+";"+comilla+");instrucciones.add("+comilla+"endfunction"+comilla+");"+r+";}\n\n"; 
+             RESULT = "public "+t+" "+i+"( ){instrucciones.add("+comilla+"function "+i+"()->"+t+":"+comilla+");"+v+" "+o+r+";}\n\n"; 
             :}
             |
             FUNCTION ID:i PARENIZQ PARENDER RET type:t DOSP operaciones:o retorne:r ENDFUNCTION
             {: 
              char comilla = 34;
-             RESULT = "public "+t+" "+i+"( ){instrucciones.add("+comilla+"function "+i+"()->"+t+":"+comilla+");"+o+"instrucciones.add("+comilla+r+";"+comilla+");instrucciones.add("+comilla+"endfunction"+comilla+");"+r+";}\n\n"; 
+             RESULT = "public "+t+" "+i+"( ){instrucciones.add("+comilla+"function "+i+"()->"+t+":"+comilla+");"+o+r+";}\n\n"; 
             :}
             ;
 
@@ -463,55 +392,49 @@ numero ::= NUM:n {:RESULT = n; :}| DECIMAL:d {:RESULT = d; :};
 asignacion ::= ID:id1 ASSIGN ID:id2 
                {: 
                 char comilla = 34;
-                RESULT = id1 + "=" + id2+";instrucciones.add("+comilla+id1+"<-"+id2+";"+comilla+");";
+                RESULT = id1 + "=" + id2+";instrucciones.add("+comilla+id1+"<-"+id2+";"+comilla+");variables.add("+comilla+id1+"<-"+comilla+"+"+id1+");";
                :}
                |
                ID:id ASSIGN numero:n 
                {: 
                 char comilla = 34;
-                RESULT = id + "=" + n+";instrucciones.add("+comilla+id+"<-"+n+";"+comilla+");";
+                RESULT = id + "=" + n+";instrucciones.add("+comilla+id+"<-"+n+";"+comilla+");variables.add("+comilla+id+"<-"+comilla+"+"+id+");";
                :} 
-               |
-               ID:id ASSIGN operacion:op 
-               {: 
-                char comilla = 34;
-                RESULT = id + "=" + op+";instrucciones.add("+comilla+id+"<-"+op+";"+comilla+");";
-               :}
                |
                ID:id ASSIGN TRUE
                {: 
                 char comilla = 34;
-                RESULT = id + "= true;instrucciones.add("+comilla+id+"<-true;"+comilla+");";
+                RESULT = id + "= true;instrucciones.add("+comilla+id+"<-true;"+comilla+");variables.add("+comilla+id+"<-"+comilla+"+"+id+");";
                :}
                |
                ID:id ASSIGN FALSE
                {: 
                 char comilla = 34;
-                RESULT = id + "= false;instrucciones.add("+comilla+id+"<-false;"+comilla+");";
+                RESULT = id + "= false;instrucciones.add("+comilla+id+"<-false;"+comilla+");variables.add("+comilla+id+"<-"+comilla+"+"+id+");";
                :}
                |
                ID:id ASSIGN factor:f 
                {: 
                 char comilla = 34;
-                RESULT = id + "=" + f+";instrucciones.add("+comilla+id+"<-"+f+";"+comilla+");";
+                RESULT = id + "=" + f+";instrucciones.add("+comilla+id+"<-"+f+";"+comilla+");variables.add("+comilla+id+"<-"+comilla+"+"+id+");";
                :}
                |
                ID:id ASSIGN MENSAJE:m 
                {: 
                 char comilla = 34;
-                RESULT = id + "="+ comilla + String.valueOf(m).substring(1, String.valueOf(m).length()-1) +comilla+" ;instrucciones.add("+comilla+id+"<-"+m+";"+comilla+");";
+                RESULT = id + "="+ comilla + String.valueOf(m).substring(1, String.valueOf(m).length()-1) +comilla+" ;instrucciones.add("+comilla+id+"<-"+m+";"+comilla+");variables.add("+comilla+id+"<-"+m+comilla+");";
                :}
                |
                ID:id ASSIGN llame:l
                {: 
                 char comilla = 34;
-                RESULT = id + "=" + l+";instrucciones.add("+comilla+id+"<-"+l+";"+comilla+");"; 
+                RESULT = "instrucciones.add("+comilla+id+"<-"+"llame("+l+");"+comilla+");variables.add("+comilla+id+"<-"+comilla+"+"+id+");"+id + "=" + l+";"; 
                :}
                |
                ID:id ASSIGN CERO:c
                {: 
                 char comilla = 34;
-                RESULT = id + "=" + c+";instrucciones.add("+comilla+id+"<-"+c+";"+comilla+");";
+                RESULT = id + "=" + c+";instrucciones.add("+comilla+id+"<-"+c+";"+comilla+");variables.add("+comilla+id+"<-"+comilla+"+"+id+");";
                :}
                ;
 
@@ -557,9 +480,9 @@ llame ::= LLAME PARENIZQ ID:i PARENIZQ paramsllame:p PARENDER PARENDER
             char comilla = 34;
             String[] aux = String.valueOf(p).split("'");
             if(aux.length == 1){
-                RESULT = "instrucciones.add("+comilla+"llame("+i+"("+p+"));"+comilla+");"+i+" ("+p+" );";  
+                RESULT = i+"("+p+");";  
             }else{
-                RESULT = "instrucciones.add("+comilla+"llame("+i+"("+p+"));"+comilla+");"+i+" ("+aux[0]+comilla+aux[1]+comilla+" );";  
+                RESULT = i+"("+aux[0]+comilla+aux[1]+comilla+");";  
             }
              
           :}
@@ -567,7 +490,7 @@ llame ::= LLAME PARENIZQ ID:i PARENIZQ paramsllame:p PARENDER PARENDER
           LLAME PARENIZQ ID:i PARENIZQ PARENDER PARENDER 
           {:
             char comilla = 34;
-            RESULT = "instrucciones.add("+comilla+"llame("+i+"());"+comilla+");"+i+"();"; 
+            RESULT = i+"()"; 
           :}
           ;
 
@@ -599,8 +522,10 @@ para ::= FOR asignacion:a TO NUM:n DOSP operaciones:o ENDFOR
          ;
 
 mientras ::= WHILE PARENIZQ condiciones:c PARENDER DOSP operaciones:o ENDWHILE
-             {: RESULT = "while( "+c+" ){"+o+" }"; :}
-             ;
+             {: 
+                char comilla = 34;
+                RESULT = "while("+c+"){instrucciones.add("+comilla+"while("+c+"):"+comilla+");"+o+"}instrucciones.add("+comilla+"while("+c+"):"+comilla+");instrucciones.add("+comilla+"endwhile"+comilla+");"; 
+             :};
 
 condiciones ::= condiciones:cs AND condicion:c {: RESULT= cs+" && "+c; :}
                 |
@@ -609,21 +534,23 @@ condiciones ::= condiciones:cs AND condicion:c {: RESULT= cs+" && "+c; :}
                 condicion:c {: RESULT=c; :}
                 ;
 
-condicion ::= ID:i1 oprel:o ID:i2 {: RESULT = i1+" "+o+" "+i2; :}
+condicion ::= ID:i1 oprel:o ID:i2 {: RESULT = i1+""+o+""+i2; :}
               |
-              ID:i oprel:o numero:n {: RESULT = i+" "+o+" "+n; :}
+              ID:i oprel:o numero:n {: RESULT = i+""+o+""+n; :}
               |
-              numero:n oprel:o ID:i {: RESULT = n+" "+o+" "+i; :}
+              ID:i oprel:o CERO:c {: RESULT = i+""+o+""+c; :}
               |
-              ID:i oprel:o opmath:om {: RESULT = i+" "+o+" "+om; :}
+              numero:n oprel:o ID:i {: RESULT = n+""+o+""+i; :}
               |
-              opmath:om oprel:o ID:i {: RESULT = om+" "+o+" "+i; :}
+              ID:i oprel:o opmath:om {: RESULT = i+""+o+""+om; :}
               |
-              numero:n oprel:o opmath:om {: RESULT = n+" "+o+" "+om; :}
+              opmath:om oprel:o ID:i {: RESULT = om+""+o+""+i; :}
               |
-              opmath:om oprel:o numero:n {: RESULT = om+" "+o+" "+n; :}
+              numero:n oprel:o opmath:om {: RESULT = n+""+o+""+om; :}
               |
-              opmath:om1 oprel:o opmath:om2 {: RESULT = om1+" "+o+" "+om2; :}
+              opmath:om oprel:o numero:n {: RESULT = om+""+o+""+n; :}
+              |
+              opmath:om1 oprel:o opmath:om2 {: RESULT = om1+""+o+""+om2; :}
               |
               TRUE {: RESULT="true"; :}
               |
@@ -642,60 +569,76 @@ opmath ::= suma:s {: RESULT = s; :} | resta:r {: RESULT = r; :}
            |
            multiplicacion:m {: RESULT = m; :} | division:d {: RESULT = d; :};
 
-suma ::= numero:n1 SUMA numero:n2 {: RESULT= n1+" + "+n2; :} 
+suma ::= numero:n1 SUMA numero:n2 {: RESULT= n1+"+"+n2; :} 
          |
-         numero:n SUMA ID:i {: RESULT= n+" + "+i; :} 
+         numero:n SUMA ID:i {: RESULT= n+"+"+i; :} 
          |
-         ID:i SUMA numero:n {: RESULT= i+" + "+n; :} 
+         ID:i SUMA numero:n {: RESULT= i+"+"+n; :} 
          |
-         ID:i1 SUMA ID:i2 {: RESULT= i1+" + "+i2; :} 
+         ID:i1 SUMA ID:i2 {: RESULT= i1+"+"+i2; :} 
          ;
 
-resta ::= numero:n1 RESTA numero:n2 {: RESULT= n1+" - "+n2; :}
+resta ::= numero:n1 RESTA numero:n2 {: RESULT= n1+"-"+n2; :}
          |
-         numero:n RESTA ID:i {: RESULT= n+" - "+i; :} 
+         numero:n RESTA ID:i {: RESULT= n+"-"+i; :} 
          |
-         ID:i RESTA numero:n {: RESULT= i+" - "+n; :} 
+         ID:i RESTA numero:n {: RESULT= i+"-"+n; :} 
          |
-         ID:i1 RESTA ID:i2 {: RESULT= i1+" - "+i2; :}
+         ID:i1 RESTA ID:i2 {: RESULT= i1+"-"+i2; :}
          ;
 
-multiplicacion ::= numero:n1 MULTI numero:n2 {: RESULT= n1+" * "+n2; :}
+multiplicacion ::= numero:n1 MULTI numero:n2 {: RESULT= n1+"*"+n2; :}
          |
-         numero:n MULTI ID:i {: RESULT= n+" * "+i; :}
+         numero:n MULTI ID:i {: RESULT= n+"*"+i; :}
          |
-         ID:i MULTI numero:n {: RESULT= i+" * "+n; :} 
+         ID:i MULTI numero:n {: RESULT= i+"*"+n; :} 
          |
-         ID:i1 MULTI ID:i2 {: RESULT= i1+" * "+i2; :}
+         ID:i1 MULTI ID:i2 {: RESULT= i1+"*"+i2; :}
          ;
 
-division ::= numero:n1 DIVIDE numero:n2 {: RESULT= n1+" / "+n2; :}
+division ::= numero:n1 DIVIDE numero:n2 {: RESULT= n1+"/"+n2; :}
          |
-         numero:n DIVIDE ID:i {: RESULT= n+" / "+i; :}
+         numero:n DIVIDE ID:i {: RESULT= n+"/"+i; :}
          |
-         ID:i DIVIDE numero:n {: RESULT= i+" / "+n; :}
+         ID:i DIVIDE numero:n {: RESULT= i+"/"+n; :}
          |
-         ID:i1 DIVIDE ID:i2 {: RESULT= i1+" / "+i2; :}
+         ID:i1 DIVIDE ID:i2 {: RESULT= i1+"/"+i2; :}
          ;
 
 control ::= si:s {: RESULT=s; :} | sino:sn {: RESULT=sn; :};
 
-si ::= IF PARENIZQ condiciones:c PARENDER DOSP operaciones:o ENDIF {: RESULT="if( "+c+" ){ "+o+" }"; :};
+si ::= IF PARENIZQ condiciones:c PARENDER DOSP operaciones:o ENDIF 
+        {: 
+          char comilla = 34;
+          RESULT="instrucciones.add("+comilla+"if("+c+"):"+comilla+");if("+c+"){"+o+" }instrucciones.add("+comilla+"endif"+comilla+");"; 
+        :};
 
 sino ::= IF PARENIZQ condiciones:c PARENDER DOSP operaciones:op1 ELSE operaciones:op2 ENDIF
-         {: RESULT="if( "+c+" ){ "+op1+" }else{ "+op2+" }"; :};
+         {: 
+            char comilla = 34;
+            RESULT="instrucciones.add("+comilla+"if("+c+"):"+comilla+");if( "+c+" ){ "+op1+" }else{ instrucciones.add("+comilla+"else"+comilla+");"+op2+" }instrucciones.add("+comilla+"endif"+comilla+");";
+         :};
 
 repita ::= REPEAT DOSP operaciones:o WHILE PARENIZQ condiciones:c PARENDER SEMI 
-           {: RESULT = "do{ "+o+" }while( "+c+" );"; :};
+           {: 
+            char comilla = 34;
+            RESULT = "do{instrucciones.add("+comilla+"repeat:"+comilla+");"+o+" instrucciones.add("+comilla+"while("+c+");"+comilla+");}while( "+c+" );"; 
+           :};
 
 retorne ::= RETURN:r ID:i SEMI 
-            {: RESULT = r+" "+i; :} 
+            {: 
+               char comilla = 34;
+               RESULT = "instrucciones.add("+comilla+"return "+i+";"+comilla+");instrucciones.add("+comilla+"endfunction"+comilla+");"+r+" "+i;
+            :}
             | 
             RETURN:r numero:n SEMI 
-            {: RESULT = r+" "+n; :} 
+            {:  
+               char comilla = 34;
+               RESULT = "instrucciones.add("+comilla+"return "+n+";"+comilla+");instrucciones.add("+comilla+"endfunction"+comilla+");"+r+" "+n;
+            :}
             |
             RETURN:r MENSAJE:m SEMI 
             {: String str = String.valueOf(m); 
                char comilla = 34;
-               RESULT = r+" "+comilla +str.substring(1,str.length()-1)+comilla;
-            :} ;
+               RESULT = "instrucciones.add("+comilla+"return "+m+";"+comilla+");instrucciones.add("+comilla+"endfunction"+comilla+");"+r+" "+comilla +str.substring(1,str.length()-1)+comilla;
+            :};
