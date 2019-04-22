@@ -49,6 +49,7 @@ public class VistaPrincipal extends javax.swing.JFrame {
      */
     public VistaPrincipal() throws FileNotFoundException, IOException {
         initComponents();
+        this.setLocationRelativeTo(null);
         LeerAlgoritmo();
         p.main();
         this.btnAutomatico.setEnabled(false);
