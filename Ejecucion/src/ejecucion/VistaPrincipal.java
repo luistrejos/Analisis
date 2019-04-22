@@ -6,8 +6,6 @@
 package ejecucion;
 
 import java.awt.Color;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -37,6 +35,7 @@ public class VistaPrincipal extends javax.swing.JFrame {
     String[] varTable = new String[2];
     LinkedList<Integer> cantidadEjecucion = new LinkedList<>();
     LinkedList<Integer> indiceInicioLinea = new LinkedList<>();
+    HiloAutomatico h;
 
     /**
      * Creates new form VistaPrincipal
@@ -50,6 +49,7 @@ public class VistaPrincipal extends javax.swing.JFrame {
         p.main();
         this.btnAutomatico.setEnabled(false);
         this.btnPaso.setEnabled(false);
+        this.btnPrueba.setEnabled(false);
         this.txtAlgoritmo.setEditable(false);
         this.txtConsola.setEditable(false);
         this.tblSeguimiento.setModel(modelo);
@@ -72,6 +72,7 @@ public class VistaPrincipal extends javax.swing.JFrame {
             contAux = 0;
         }
         System.out.println("Variables:\n" + p.variables);
+        btnPrueba.setName("pruebaaaa");
     }
 
     private void LeerAlgoritmo() throws FileNotFoundException, IOException {
@@ -119,6 +120,7 @@ public class VistaPrincipal extends javax.swing.JFrame {
         jScrollPane4 = new javax.swing.JScrollPane();
         txtValores = new javax.swing.JTextArea();
         btnDebug = new javax.swing.JButton();
+        btnPrueba = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -185,6 +187,13 @@ public class VistaPrincipal extends javax.swing.JFrame {
             }
         });
 
+        btnPrueba.setText("jButton1");
+        btnPrueba.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnPruebaActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -194,7 +203,7 @@ public class VistaPrincipal extends javax.swing.JFrame {
                     .addGroup(layout.createSequentialGroup()
                         .addGap(6, 6, 6)
                         .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 265, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGap(54, 54, 54)
                         .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, 54, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(18, 18, 18)
                         .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 12, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -208,8 +217,10 @@ public class VistaPrincipal extends javax.swing.JFrame {
                                 .addGap(32, 32, 32)
                                 .addComponent(btnPaso))
                             .addGroup(layout.createSequentialGroup()
-                                .addGap(54, 54, 54)
-                                .addComponent(btnDebug)))
+                                .addGap(18, 18, 18)
+                                .addComponent(btnDebug)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(btnPrueba)))
                         .addGap(18, 18, Short.MAX_VALUE)
                         .addComponent(jSeparator2, javax.swing.GroupLayout.PREFERRED_SIZE, 12, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -248,7 +259,9 @@ public class VistaPrincipal extends javax.swing.JFrame {
                                     .addComponent(btnPaso)
                                     .addComponent(btnAutomatico))
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(btnDebug))
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                    .addComponent(btnDebug)
+                                    .addComponent(btnPrueba)))
                             .addComponent(jSeparator2)
                             .addComponent(jScrollPane3)
                             .addComponent(jScrollPane4, javax.swing.GroupLayout.Alignment.LEADING)
@@ -265,11 +278,18 @@ public class VistaPrincipal extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    
+    Timer timer;
+    boolean ejecutando = false;
     private void btnAutomaticoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAutomaticoActionPerformed
         // TODO add your handling code here:
+        this.btnPrueba.setEnabled(true);
+        this.btnPrueba.setText("Pausar");
+        ejecutando = true;
         modelo.setRowCount(0);
-        Timer timer;
-        timer = new Timer(500, new ActionListener() {
+        h = new HiloAutomatico(txtAlgoritmo, txtValores, modelo, instrucciones, p, cantidadEjecucion, indiceInicioLinea);
+        h.start();
+        /*timer = new Timer(500, new ActionListener() {
             int cont2 = 0, contV = 0;
 
             @Override
@@ -293,7 +313,7 @@ public class VistaPrincipal extends javax.swing.JFrame {
                 }
             }
         });
-        timer.start();
+        timer.start();*/
 
 
     }//GEN-LAST:event_btnAutomaticoActionPerformed
@@ -349,6 +369,18 @@ public class VistaPrincipal extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_txtValoresKeyReleased
 
+    private void btnPruebaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnPruebaActionPerformed
+        if (ejecutando) {
+            h.ejecutar = false;
+            ejecutando = false;
+            this.btnPrueba.setText("Reanudar");
+        }else{
+            h.ejecutar = true;
+            ejecutando = true;
+            this.btnPrueba.setText("Pausar");
+        }
+    }//GEN-LAST:event_btnPruebaActionPerformed
+
     private void InsertarTabla(String s) {
         String[] aux = s.split("<-");
         String[] row = {aux[0], aux[1]};
@@ -377,7 +409,6 @@ public class VistaPrincipal extends javax.swing.JFrame {
 
     private void SubRayar2(int pos, int fin) {
         Highlighter h = this.txtValores.getHighlighter();
-        //h.removeAllHighlights();
         try {
             h.addHighlight(pos, pos + fin, new DefaultHighlighter.DefaultHighlightPainter(Color.RED));
         } catch (BadLocationException e) {
@@ -389,8 +420,7 @@ public class VistaPrincipal extends javax.swing.JFrame {
         for (int i = 0; i < valores.length; i++) {
             int letraCadena = Integer.valueOf(valores[i]);
             if (letraCadena != cantidadEjecucion.get(i)) {
-                /// aca falta el el fin donde termina de resaltar
-                SubRayar2(indiceInicioLinea.get(i), 1);
+                SubRayar2(indiceInicioLinea.get(i), valores[i].length());
             }
         }
     }
@@ -440,6 +470,7 @@ public class VistaPrincipal extends javax.swing.JFrame {
     private javax.swing.JButton btnAutomatico;
     private javax.swing.JButton btnDebug;
     private javax.swing.JButton btnPaso;
+    private javax.swing.JButton btnPrueba;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
