@@ -86,6 +86,7 @@ public class VistaPrincipal extends javax.swing.JFrame {
         txtLineas.setEditable(false);
         txtLineas.setColumns(20);
         txtLineas.setRows(5);
+        txtLineas.setText("1");
         jScrollPane2.setViewportView(txtLineas);
 
         jLabel2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Img/lupapeque.png"))); // NOI18N
@@ -182,7 +183,7 @@ public class VistaPrincipal extends javax.swing.JFrame {
         if (evt.getKeyCode() == KeyEvent.VK_ENTER) {
             this.txtLineas.setText("");
             int n = this.txtCodigo.getText().split("\n").length;
-            for (int i = 01; i <= n; i++) {
+            for (int i = 1; i <= n+1; i++) {
                 this.txtLineas.append(i+"\n");
             }
         }
