@@ -53,7 +53,7 @@ public class VistaPrincipal extends javax.swing.JFrame {
         jScrollPane1 = new javax.swing.JScrollPane();
         txtCodigo = new javax.swing.JTextPane();
         jScrollPane2 = new javax.swing.JScrollPane();
-        jTextArea1 = new javax.swing.JTextArea();
+        txtLineas = new javax.swing.JTextArea();
         jLabel2 = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
 
@@ -83,11 +83,10 @@ public class VistaPrincipal extends javax.swing.JFrame {
         });
         jScrollPane1.setViewportView(txtCodigo);
 
-        jTextArea1.setEditable(false);
-        jTextArea1.setColumns(20);
-        jTextArea1.setRows(5);
-        jTextArea1.setText("1\n2\n3\n4\n5\n6\n7\n8\n9\n10\n11\n12\n13\n14\n15\n16\n17\n18");
-        jScrollPane2.setViewportView(jTextArea1);
+        txtLineas.setEditable(false);
+        txtLineas.setColumns(20);
+        txtLineas.setRows(5);
+        jScrollPane2.setViewportView(txtLineas);
 
         jLabel2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Img/lupapeque.png"))); // NOI18N
 
@@ -127,7 +126,6 @@ public class VistaPrincipal extends javax.swing.JFrame {
                 .addComponent(jLabel1)
                 .addGap(30, 30, 30)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 354, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 354, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(layout.createSequentialGroup()
                         .addGap(7, 7, 7)
@@ -137,7 +135,8 @@ public class VistaPrincipal extends javax.swing.JFrame {
                         .addGap(27, 27, 27)
                         .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 140, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(20, 20, 20)
-                        .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 110, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 110, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 354, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -180,6 +179,22 @@ public class VistaPrincipal extends javax.swing.JFrame {
 
     private void txtCodigoKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtCodigoKeyReleased
         // TODO add your handling code here:
+        if (evt.getKeyCode() == KeyEvent.VK_ENTER) {
+            this.txtLineas.setText("");
+            int n = this.txtCodigo.getText().split("\n").length;
+            for (int i = 01; i <= n; i++) {
+                this.txtLineas.append(i+"\n");
+            }
+        }
+        
+        if (evt.getKeyCode() == KeyEvent.VK_BACK_SPACE) {
+            this.txtLineas.setText("");
+            int n = this.txtCodigo.getText().split("\n").length;
+            for (int i = 01; i <= n; i++) {
+                this.txtLineas.append(i+"\n");
+            }
+        }
+        
         if (txtCodigo.getText().contains("int")) {
             PonerNegrita(txtCodigo.getText().lastIndexOf("int"), 3, Color.blue);
         }
@@ -318,7 +333,7 @@ public class VistaPrincipal extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel3;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
-    private javax.swing.JTextArea jTextArea1;
     private javax.swing.JTextPane txtCodigo;
+    private javax.swing.JTextArea txtLineas;
     // End of variables declaration//GEN-END:variables
 }
