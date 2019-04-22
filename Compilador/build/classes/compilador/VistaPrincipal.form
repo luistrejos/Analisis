@@ -61,7 +61,6 @@
               <Component id="jLabel1" min="-2" max="-2" attributes="0"/>
               <EmptySpace min="-2" pref="30" max="-2" attributes="0"/>
               <Group type="103" groupAlignment="0" attributes="0">
-                  <Component id="jScrollPane2" min="-2" pref="354" max="-2" attributes="0"/>
                   <Component id="jScrollPane1" min="-2" pref="354" max="-2" attributes="0"/>
                   <Group type="102" attributes="0">
                       <EmptySpace min="7" pref="7" max="-2" attributes="0"/>
@@ -73,6 +72,7 @@
                       <EmptySpace min="20" pref="20" max="-2" attributes="0"/>
                       <Component id="jLabel3" min="-2" pref="110" max="-2" attributes="0"/>
                   </Group>
+                  <Component id="jScrollPane2" min="-2" pref="354" max="-2" attributes="0"/>
               </Group>
               <EmptySpace max="32767" attributes="0"/>
           </Group>
@@ -125,12 +125,11 @@
 
       <Layout class="org.netbeans.modules.form.compat2.layouts.support.JScrollPaneSupportLayout"/>
       <SubComponents>
-        <Component class="javax.swing.JTextArea" name="jTextArea1">
+        <Component class="javax.swing.JTextArea" name="txtLineas">
           <Properties>
             <Property name="editable" type="boolean" value="false"/>
             <Property name="columns" type="int" value="20"/>
             <Property name="rows" type="int" value="5"/>
-            <Property name="text" type="java.lang.String" value="1&#xa;2&#xa;3&#xa;4&#xa;5&#xa;6&#xa;7&#xa;8&#xa;9&#xa;10&#xa;11&#xa;12&#xa;13&#xa;14&#xa;15&#xa;16&#xa;17&#xa;18"/>
           </Properties>
         </Component>
       </SubComponents>
