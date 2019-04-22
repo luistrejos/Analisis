@@ -274,7 +274,7 @@ public class VistaPrincipal extends javax.swing.JFrame {
         //modelo.addRow(row)
 
         Timer timer;
-        timer = new Timer(100, new ActionListener() {
+        timer = new Timer(500, new ActionListener() {
             int cont2 = 0;
 
             @Override

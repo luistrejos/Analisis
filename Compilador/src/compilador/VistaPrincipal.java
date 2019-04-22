@@ -196,9 +196,17 @@ public class VistaPrincipal extends javax.swing.JFrame {
         if (txtCodigo.getText().contains("function")) {
             PonerNegrita(txtCodigo.getText().lastIndexOf("function"), 8, Color.black);
         }
+        
+        if (txtCodigo.getText().contains("endfunction")) {
+            PonerNegrita(txtCodigo.getText().lastIndexOf("endfunction"), 11, Color.black);
+        }
 
         if (txtCodigo.getText().contains("procedure")) {
             PonerNegrita(txtCodigo.getText().lastIndexOf("procedure"), 9, Color.black);
+        }
+        
+        if (txtCodigo.getText().contains("endprocedure")) {
+            PonerNegrita(txtCodigo.getText().lastIndexOf("endprocedure"), 12, Color.black);
         }
 
         if (txtCodigo.getText().contains("main")) {
