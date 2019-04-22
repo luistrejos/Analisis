@@ -13,11 +13,9 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.swing.JTextArea;
 import javax.swing.Timer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.text.BadLocationException;
@@ -34,8 +32,6 @@ public class VistaPrincipal extends javax.swing.JFrame {
     String[] columnNames = {"Variable", "Valor"};
     DefaultTableModel modelo = new DefaultTableModel(data, columnNames);
     Object[][] data2;
-    String[] columnNames2 = {"Cant"};
-    DefaultTableModel modelo2 = new DefaultTableModel(data2, columnNames2);
     LinkedList<String[]> instrucciones = new LinkedList<>();
     Programa p = new Programa();
     String[] varTable = new String[2];
@@ -72,12 +68,10 @@ public class VistaPrincipal extends javax.swing.JFrame {
                     contAux++;
                 }
             }
-            String[] row = {"0"};
-            modelo2.addRow(row);
             cantidadEjecucion.add(contAux);
-            //System.out.println(instrucciones.get(i)[0]+" : "+contAux);
             contAux = 0;
         }
+        System.out.println("Variables:\n" + p.variables);
     }
 
     private void LeerAlgoritmo() throws FileNotFoundException, IOException {
@@ -198,16 +192,6 @@ public class VistaPrincipal extends javax.swing.JFrame {
             .addGroup(layout.createSequentialGroup()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(410, 410, 410)
-                        .addComponent(jLabel2))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(50, 50, 50)
-                        .addComponent(jLabel3)
-                        .addGap(229, 229, 229)
-                        .addComponent(jLabel1)
-                        .addGap(265, 265, 265)
-                        .addComponent(jLabel4))
-                    .addGroup(layout.createSequentialGroup()
                         .addGap(6, 6, 6)
                         .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 265, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -229,8 +213,20 @@ public class VistaPrincipal extends javax.swing.JFrame {
                         .addGap(18, 18, Short.MAX_VALUE)
                         .addComponent(jSeparator2, javax.swing.GroupLayout.PREFERRED_SIZE, 12, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 296, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 296, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(410, 410, 410)
+                        .addComponent(jLabel2)
+                        .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+            .addGroup(layout.createSequentialGroup()
+                .addGap(50, 50, 50)
+                .addComponent(jLabel3)
+                .addGap(229, 229, 229)
+                .addComponent(jLabel1)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jLabel4)
+                .addGap(131, 131, 131))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -262,7 +258,7 @@ public class VistaPrincipal extends javax.swing.JFrame {
                         .addGap(16, 16, 16)
                         .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 27, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jScrollPane1)
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 546, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(62, 62, 62))))
         );
 
@@ -271,12 +267,10 @@ public class VistaPrincipal extends javax.swing.JFrame {
 
     private void btnAutomaticoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAutomaticoActionPerformed
         // TODO add your handling code here:
-        //String[] row = {"f", String.valueOf(p.linea)};
-        //modelo.addRow(row)
-
+        modelo.setRowCount(0);
         Timer timer;
         timer = new Timer(500, new ActionListener() {
-            int cont2 = 0;
+            int cont2 = 0, contV = 0;
 
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -285,6 +279,10 @@ public class VistaPrincipal extends javax.swing.JFrame {
                     for (String[] aux : instrucciones) {
                         if (aux[0].trim().equals(i)) {
                             SubRayar(Integer.valueOf(aux[1]), aux[0].length());
+                            if (aux[0].contains("<-") && contV < p.variables.size()) {
+                                InsertarTabla(p.variables.get(contV));
+                                contV++;
+                            }
                         }
                     }
                     cont2++;
@@ -300,17 +298,21 @@ public class VistaPrincipal extends javax.swing.JFrame {
 
     }//GEN-LAST:event_btnAutomaticoActionPerformed
 
-    int cont = 0;
+    int cont = 0, contV2 = 0;
     private void btnPasoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnPasoActionPerformed
         // TODO add your handling code here
-        if (cont == 0) {
-            this.txtValores.getHighlighter().removeAllHighlights();
-        }
         String i;
         if (cont < p.instrucciones.size() && (i = p.instrucciones.get(cont)) != null) {
             for (String[] aux : instrucciones) {
                 if (aux[0].trim().equals(i)) {
                     SubRayar(Integer.valueOf(aux[1]), aux[0].length());
+                    if (aux[0].trim().equals(i)) {
+                        SubRayar(Integer.valueOf(aux[1]), aux[0].length());
+                        if (aux[0].contains("<-") && contV2 < p.variables.size()) {
+                            InsertarTabla(p.variables.get(contV2));
+                            contV2++;
+                        }
+                    }
                 }
             }
             cont++;
@@ -328,6 +330,8 @@ public class VistaPrincipal extends javax.swing.JFrame {
     private void btnDebugActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDebugActionPerformed
         // TODO add your handling code here:
         cont = 0;
+        modelo.setRowCount(0);
+        contV2 = 0;
         this.btnPaso.setEnabled(true);
         this.btnAutomatico.setEnabled(true);
         this.txtAlgoritmo.getHighlighter().removeAllHighlights();
@@ -339,11 +343,17 @@ public class VistaPrincipal extends javax.swing.JFrame {
         if (instrucciones.size() == txtValores.getText().split("\n").length) {
             this.btnAutomatico.setEnabled(true);
             this.btnPaso.setEnabled(true);
-        }else{
+        } else {
             this.btnAutomatico.setEnabled(false);
             this.btnPaso.setEnabled(false);
         }
     }//GEN-LAST:event_txtValoresKeyReleased
+
+    private void InsertarTabla(String s) {
+        String[] aux = s.split("<-");
+        String[] row = {aux[0], aux[1]};
+        modelo.addRow(row);
+    }
 
     private void ResaltarMalCalculo() {
         String split[] = this.txtValores.getText().split("\n");

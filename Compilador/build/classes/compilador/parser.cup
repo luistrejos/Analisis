@@ -508,7 +508,7 @@ para ::= FOR asignacion:a TO NUM:n DOSP operaciones:o ENDFOR
             System.out.println(var[1]);
             String[] val = var[1].split(";");
             char comilla = 34;
-            RESULT = "for( int "+var[0].trim()+"="+val[0].trim()+" ; "+var[0].trim()+" <= "+n+" ; "+var[0].trim()+" ++){ instrucciones.add("+comilla+"for "+var[0].trim()+"<-"+val[0].trim()+" to "+n+":"+comilla+");"+o+" }instrucciones.add("+comilla+"for "+var[0].trim()+"<-"+val[0].trim()+" to "+n+":"+comilla+");instrucciones.add("+comilla+"endfor"+comilla+");"; 
+            RESULT = "for( int "+var[0].trim()+"="+val[0].trim()+" ; "+var[0].trim()+" <= "+n+" ; "+var[0].trim()+" ++){ instrucciones.add("+comilla+"for "+var[0].trim()+"<-"+val[0].trim()+" to "+n+":"+comilla+");variables.add("+comilla+var[0].trim()+"<-"+comilla+"+"+var[0].trim()+");"+o+" }instrucciones.add("+comilla+"for "+var[0].trim()+"<-"+val[0].trim()+" to "+n+":"+comilla+");instrucciones.add("+comilla+"endfor"+comilla+");"; 
          :}
          |
          FOR asignacion:a TO ID:i DOSP operaciones:o ENDFOR
@@ -517,7 +517,7 @@ para ::= FOR asignacion:a TO NUM:n DOSP operaciones:o ENDFOR
             System.out.println(var[1]);
             String[] val = var[1].split(";");
             char comilla = 34;
-            RESULT = "for( int "+var[0].trim()+"="+val[0].trim()+" ; "+var[0].trim()+" <= "+i+" ; "+var[0].trim()+" ++){ instrucciones.add("+comilla+"for "+var[0].trim()+"<-"+val[0].trim()+" to "+i+":"+comilla+");"+o+" }instrucciones.add("+comilla+"for "+var[0].trim()+"<-"+val[0].trim()+" to "+i+":"+comilla+");instrucciones.add("+comilla+"endfor"+comilla+");"; 
+            RESULT = "for( int "+var[0].trim()+"="+val[0].trim()+" ; "+var[0].trim()+" <= "+i+" ; "+var[0].trim()+" ++){ instrucciones.add("+comilla+"for "+var[0].trim()+"<-"+val[0].trim()+" to "+i+":"+comilla+");variables.add("+comilla+var[0].trim()+"<-"+comilla+"+"+var[0].trim()+");"+o+" }instrucciones.add("+comilla+"for "+var[0].trim()+"<-"+val[0].trim()+" to "+i+":"+comilla+");instrucciones.add("+comilla+"endfor"+comilla+");"; 
          :}
          ;
 

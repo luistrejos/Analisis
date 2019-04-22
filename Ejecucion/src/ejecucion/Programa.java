@@ -17,6 +17,7 @@ public class Programa {
         variables.add("n<-" + n);
         for (int i = 0; i <= n; i++) {
             instrucciones.add("for i<-0 to n:");
+            variables.add("i<-" + i);
             resultadoConsola.add("hola " + i);
             instrucciones.add("escriba('hola',i);");
         }
