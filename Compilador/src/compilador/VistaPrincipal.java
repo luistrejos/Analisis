@@ -28,14 +28,13 @@ import javax.swing.text.StyleConstants;
  */
 public class VistaPrincipal extends javax.swing.JFrame {
 
-    private String archivo = "";
-
     /**
      * Creates new form VistaPrincipal
      */
     public VistaPrincipal() {
         initComponents();
         this.setLocationRelativeTo(null);
+        this.btnAnalizar.setText("Cargar código");
     }
 
     /**
@@ -144,14 +143,25 @@ public class VistaPrincipal extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    String file = "";
     private void btnGuardarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnGuardarActionPerformed
         // TODO add your handling code here:
         File archivoPrograma;
         BufferedWriter bw;
 
-        archivo = JOptionPane.showInputDialog("Ingrese el nombre del programa");
+        //archivo = JOptionPane.showInputDialog("Ingrese el nombre del programa");
+        JFileChooser jF1 = new JFileChooser();
 
-        String file = "src/algoritmos/" + archivo + ".txt";
+        try {
+            if (jF1.showSaveDialog(null) == jF1.APPROVE_OPTION) {
+                file = jF1.getSelectedFile().getAbsolutePath();
+                System.out.println("File: " + file);
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+
+        //String file = "src/algoritmos/" + archivo + ".txt";
         archivoPrograma = new File(file);
 
         try {
@@ -162,18 +172,56 @@ public class VistaPrincipal extends javax.swing.JFrame {
             bw = new BufferedWriter(new FileWriter(archivoPrograma));
             bw.write(txtCodigo.getText());
             bw.close();
+            this.btnAnalizar.setText("Analizar código");
         } catch (IOException ex) {
             Logger.getLogger(VistaPrincipal.class.getName()).log(Level.SEVERE, null, ex);
         }
 
     }//GEN-LAST:event_btnGuardarActionPerformed
 
+    boolean cargado = false;
     private void btnAnalizarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAnalizarActionPerformed
+        Reader reader = null;
         try {
-            // TODO add your handling code here:
-            AnalizarCodigo(archivo);
+            if (this.file.isEmpty()) {
+                JFileChooser selectorArchivos = new JFileChooser();
+                selectorArchivos.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
+                selectorArchivos.showOpenDialog(this);
+                File file = selectorArchivos.getSelectedFile();
+                this.file = file.getAbsolutePath();
+                this.btnAnalizar.setText("Analizar código");
+                FileReader fr = new FileReader(file);
+                BufferedReader br = new BufferedReader(fr);
+                String linea;
+                while ((linea = br.readLine()) != null) {
+                    this.txtCodigo.setText(this.txtCodigo.getText() + linea + "\n");
+                }
+                cargado = true;
+                return;
+            }
+            if (cargado) {
+                reader = new BufferedReader(new FileReader(this.file));
+                Lexer lexer = new Lexer(reader);
+                parser miParser = new parser(lexer, "Programa");
+                try {
+                    miParser.parse();
+
+                } catch (Exception ex) {
+                    Logger.getLogger(VistaPrincipal.class
+                            .getName()).log(Level.SEVERE, null, ex);
+                }try {
+                    reader.close();
+                } catch (IOException ex) {
+                    Logger.getLogger(VistaPrincipal.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+
+        } catch (FileNotFoundException ex) {
+            Logger.getLogger(VistaPrincipal.class.getName()).log(Level.SEVERE, null, ex);
         } catch (IOException ex) {
             Logger.getLogger(VistaPrincipal.class.getName()).log(Level.SEVERE, null, ex);
+        } finally {
+            
         }
 
     }//GEN-LAST:event_btnAnalizarActionPerformed
@@ -183,19 +231,19 @@ public class VistaPrincipal extends javax.swing.JFrame {
         if (evt.getKeyCode() == KeyEvent.VK_ENTER) {
             this.txtLineas.setText("");
             int n = this.txtCodigo.getText().split("\n").length;
-            for (int i = 1; i <= n+1; i++) {
-                this.txtLineas.append(i+"\n");
+            for (int i = 1; i <= n + 1; i++) {
+                this.txtLineas.append(i + "\n");
             }
         }
-        
+
         if (evt.getKeyCode() == KeyEvent.VK_BACK_SPACE) {
             this.txtLineas.setText("");
             int n = this.txtCodigo.getText().split("\n").length;
             for (int i = 01; i <= n; i++) {
-                this.txtLineas.append(i+"\n");
+                this.txtLineas.append(i + "\n");
             }
         }
-        
+
         if (txtCodigo.getText().contains("int")) {
             PonerNegrita(txtCodigo.getText().lastIndexOf("int"), 3, Color.blue);
         }
@@ -243,7 +291,7 @@ public class VistaPrincipal extends javax.swing.JFrame {
         if (txtCodigo.getText().contains("function")) {
             PonerNegrita(txtCodigo.getText().lastIndexOf("function"), 8, Color.black);
         }
-        
+
         if (txtCodigo.getText().contains("endfunction")) {
             PonerNegrita(txtCodigo.getText().lastIndexOf("endfunction"), 11, Color.black);
         }
@@ -251,7 +299,7 @@ public class VistaPrincipal extends javax.swing.JFrame {
         if (txtCodigo.getText().contains("procedure")) {
             PonerNegrita(txtCodigo.getText().lastIndexOf("procedure"), 9, Color.black);
         }
-        
+
         if (txtCodigo.getText().contains("endprocedure")) {
             PonerNegrita(txtCodigo.getText().lastIndexOf("endprocedure"), 12, Color.black);
         }
@@ -259,9 +307,9 @@ public class VistaPrincipal extends javax.swing.JFrame {
         if (txtCodigo.getText().contains("main")) {
             PonerNegrita(txtCodigo.getText().lastIndexOf("main"), 4, Color.black);
         }
-        
+
         if (evt.getKeyCode() == KeyEvent.VK_ENTER) {
-            
+
         }
 
     }//GEN-LAST:event_txtCodigoKeyReleased
@@ -271,24 +319,6 @@ public class VistaPrincipal extends javax.swing.JFrame {
         StyleConstants.setBold(atributo, true);
         StyleConstants.setForeground(atributo, color);
         txtCodigo.getStyledDocument().setCharacterAttributes(pos, length, atributo, true);
-    }
-
-    private void AnalizarCodigo(String archivo) throws FileNotFoundException, IOException {
-        if (archivo.isEmpty()) {
-            JFileChooser selectorArchivos = new JFileChooser();
-            selectorArchivos.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
-            selectorArchivos.showOpenDialog(this);
-            File file = selectorArchivos.getSelectedFile();
-            archivo = file.getName().substring(0, file.getName().length()-4);
-        }
-        Reader reader = new BufferedReader(new FileReader("src/algoritmos/" + archivo + ".txt"));
-        Lexer lexer = new Lexer(reader);
-        parser miParser = new parser(lexer, "Programa");
-        try {
-            miParser.parse();
-        } catch (Exception ex) {
-            Logger.getLogger(VistaPrincipal.class.getName()).log(Level.SEVERE, null, ex);
-        }
     }
 
     /**
@@ -305,16 +335,24 @@ public class VistaPrincipal extends javax.swing.JFrame {
                 if ("Nimbus".equals(info.getName())) {
                     javax.swing.UIManager.setLookAndFeel(info.getClassName());
                     break;
+
                 }
             }
         } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(VistaPrincipal.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(VistaPrincipal.class
+                    .getName()).log(java.util.logging.Level.SEVERE, null, ex);
+
         } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(VistaPrincipal.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(VistaPrincipal.class
+                    .getName()).log(java.util.logging.Level.SEVERE, null, ex);
+
         } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(VistaPrincipal.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(VistaPrincipal.class
+                    .getName()).log(java.util.logging.Level.SEVERE, null, ex);
+
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(VistaPrincipal.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(VistaPrincipal.class
+                    .getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
         //</editor-fold>
 
