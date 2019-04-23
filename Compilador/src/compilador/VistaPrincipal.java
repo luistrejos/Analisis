@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package compilador;
 
 import java.awt.Color;
@@ -172,6 +167,7 @@ public class VistaPrincipal extends javax.swing.JFrame {
             bw.write(txtCodigo.getText());
             bw.close();
             this.btnAnalizar.setText("Analizar código");
+            this.cargado = true;
         } catch (IOException ex) {
             Logger.getLogger(VistaPrincipal.class.getName()).log(Level.SEVERE, null, ex);
         }

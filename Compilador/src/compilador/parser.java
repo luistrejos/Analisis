@@ -26,9 +26,18 @@ public class parser extends java_cup.runtime.lr_parser {
   public parser() {super();}
 
   /** Constructor which sets the default scanner. */
+  /**
+   * 
+   * @param s s
+   */
   public parser(java_cup.runtime.Scanner s) {super(s);}
 
   /** Constructor which sets the default scanner. */
+  /**
+   * 
+   * @param s s
+   * @param sf sf
+   */
   public parser(java_cup.runtime.Scanner s, java_cup.runtime.SymbolFactory sf) {super(s,sf);}
 
   /** Production table. */
