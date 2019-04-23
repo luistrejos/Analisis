@@ -10,6 +10,7 @@ import java.util.LinkedList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JButton;
+import javax.swing.JOptionPane;
 import javax.swing.JTextArea;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.text.BadLocationException;
@@ -117,12 +118,22 @@ public class HiloAutomatico extends Thread {
      */
     private void compararCalculoEstudiante() {
         String[] valores = this.txtValores.getText().split("\n");
+        int sumaV=0;
         for (int i = 0; i < valores.length; i++) {
-            int letraCadena = Integer.valueOf(valores[i]);
-            if (letraCadena != cantidadEjecucion.get(i)) {
+            int valor = Integer.valueOf(valores[i]);
+            if (valor != cantidadEjecucion.get(i)) {
                 SubRayar2(indiceInicioLinea.get(i), valores[i].length());
+            }else{
+                  sumaV += valor;
             }
         }
+        int sumaC = 0;
+        for (Integer integer : cantidadEjecucion) {
+            sumaC += integer;
+        }
+        int x = (sumaV*100)/sumaC;
+        JOptionPane.showMessageDialog(null, "Cantidad  real de ejecución: "+sumaC+"\nCantidad de ejecución ingresada: "+sumaV+"\nAcertó en un "+x+"%");
+        ejecutar = false;
     }
 
     /**
@@ -160,7 +171,18 @@ public class HiloAutomatico extends Thread {
     private void InsertarTabla(String s) {
         String[] aux = s.split("<-");
         String[] row = {aux[0], aux[1]};
-        this.modelo.addRow(row);
+        boolean b = false;
+        int rows = modelo.getRowCount();
+        for (int i = 0; i < rows; i++) {
+            String var = String.valueOf(modelo.getValueAt(i, 0));
+            if (var.equals(aux[0])) {
+                modelo.setValueAt(aux[1], i, 1);
+                b = true;
+                break;
+            }
+        }
+        if (!b) {
+            this.modelo.addRow(row);
+        }
     }
-
 }
