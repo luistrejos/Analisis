@@ -5,9 +5,7 @@
         <group>
             <file>file:/home/jitzo/Documentos/GitHub/Analisis/Compilador/src/compilador/VistaPrincipal.java</file>
             <file>file:/home/jitzo/Documentos/GitHub/Analisis/Compilador/src/algoritmos/prueba.txt</file>
-            <file>file:/home/jitzo/Documentos/GitHub/Analisis/Compilador/src/compilador/lexer.flex</file>
             <file>file:/home/jitzo/Documentos/GitHub/Analisis/Compilador/src/compilador/parser.java</file>
-            <file>file:/home/jitzo/Documentos/GitHub/Analisis/Compilador/src/compilador/parser.cup</file>
         </group>
     </open-files>
 </project-private>
