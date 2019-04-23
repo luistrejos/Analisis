@@ -161,6 +161,9 @@ public class VistaPrincipal extends javax.swing.JFrame {
         archivoPrograma = new File(file);
 
         try {
+            bw = new BufferedWriter(new FileWriter(archivoPrograma));
+            bw.write(txtCodigo.getText());
+            bw.close();
             archivoPrograma = new File("/home/jitzo/Documentos/GitHub/Analisis/Ejecucion/src/ejecucion/algoritmo.txt");
             bw = new BufferedWriter(new FileWriter(archivoPrograma));
             bw.write(txtCodigo.getText());
