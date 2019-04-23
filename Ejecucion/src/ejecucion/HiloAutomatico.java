@@ -33,13 +33,13 @@ public class HiloAutomatico extends Thread {
     LinkedList<Integer> breakpoints;
     boolean ejecutar = true;
     JButton btn;
-    boolean ejecutando;
+    int velocidad;
 
     public HiloAutomatico(JTextArea area, JTextArea txtValores, DefaultTableModel modelo,
             LinkedList<String[]> instrucciones, Programa p,
             LinkedList<Integer> cantidadEjecucion,
             LinkedList<Integer> indiceInicioLinea, LinkedList<Integer> breakpoints,
-            JButton btn, boolean ejecutando) {
+            JButton btn) {
         this.txtAlgoritmo = area;
         this.txtValores = txtValores;
         this.modelo = modelo;
@@ -49,7 +49,7 @@ public class HiloAutomatico extends Thread {
         this.indiceInicioLinea = indiceInicioLinea;
         this.breakpoints = breakpoints;
         this.btn = btn;
-        this.ejecutando = ejecutando;
+        this.velocidad = 500;
     }
 
     @Override
@@ -64,7 +64,6 @@ public class HiloAutomatico extends Thread {
                                 if (breakpoint == instrucciones.indexOf(aux)) {
                                     System.out.println("Linea: "+aux[0].trim() + " : "+breakpoint);
                                     ejecutar = false;
-                                    ejecutando = false;
                                     btn.setText("Reanudar");
                                 }
                             }
@@ -84,7 +83,10 @@ public class HiloAutomatico extends Thread {
                 }
             }
             try {
-                Thread.sleep(500);
+                if (velocidad>0) {
+                    Thread.sleep(velocidad);
+                }
+                
             } catch (InterruptedException ex) {
                 Logger.getLogger(HiloAutomatico.class.getName()).log(Level.SEVERE, null, ex);
             }
