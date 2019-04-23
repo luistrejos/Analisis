@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JButton;
+import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.DefaultHighlighter;
@@ -547,12 +548,22 @@ public class VistaPrincipal extends javax.swing.JFrame {
 
     private void compararCalculoEstudiante() {
         String[] valores = this.txtValores.getText().split("\n");
+        int sumaV = 0;
         for (int i = 0; i < valores.length; i++) {
-            int letraCadena = Integer.valueOf(valores[i]);
-            if (letraCadena != cantidadEjecucion.get(i)) {
+            int valor = Integer.valueOf(valores[i]);
+          
+            if (valor != cantidadEjecucion.get(i)) {
                 SubRayar2(indiceInicioLinea.get(i), valores[i].length());
+            }else{
+                  sumaV += valor;
             }
         }
+        int sumaC = 0;
+        for (Integer integer : cantidadEjecucion) {
+            sumaC += integer;
+        }
+        int x = (sumaV*100)/sumaC;
+        JOptionPane.showMessageDialog(this, "Cantidad  real de ejecución: "+sumaC+"\nCantidad de ejecución ingresada: "+sumaV+"\nAcertó en un "+x+"%");
     }
 
     /**
