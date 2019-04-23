@@ -24,6 +24,7 @@ public class VistaPrincipal extends javax.swing.JFrame {
 
     String file = "";
     boolean cargado = false;
+
     /**
      * Creates new form VistaPrincipal
      */
@@ -141,7 +142,8 @@ public class VistaPrincipal extends javax.swing.JFrame {
 
     /**
      * Acción para el botón que guarda el algoritmo ingresado por el usuario
-     * @param evt 
+     *
+     * @param evt
      */
     private void btnGuardarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnGuardarActionPerformed
         // TODO add your handling code here:
@@ -159,9 +161,6 @@ public class VistaPrincipal extends javax.swing.JFrame {
         archivoPrograma = new File(file);
 
         try {
-            bw = new BufferedWriter(new FileWriter(archivoPrograma));
-            bw.write(txtCodigo.getText());
-            bw.close();
             archivoPrograma = new File("/home/jitzo/Documentos/GitHub/Analisis/Ejecucion/src/ejecucion/algoritmo.txt");
             bw = new BufferedWriter(new FileWriter(archivoPrograma));
             bw.write(txtCodigo.getText());
@@ -175,9 +174,10 @@ public class VistaPrincipal extends javax.swing.JFrame {
     }//GEN-LAST:event_btnGuardarActionPerformed
 
     /**
-     * Acción que dependiendo de una bandera, carga un algoritmo seleccionado por
-     * el usuario, o analiza un algoritmo guardado por el usuario
-     * @param evt 
+     * Acción que dependiendo de una bandera, carga un algoritmo seleccionado
+     * por el usuario, o analiza un algoritmo guardado por el usuario
+     *
+     * @param evt
      */
     private void btnAnalizarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAnalizarActionPerformed
         Reader reader = null;
@@ -195,6 +195,13 @@ public class VistaPrincipal extends javax.swing.JFrame {
                 while ((linea = br.readLine()) != null) {
                     this.txtCodigo.setText(this.txtCodigo.getText() + linea + "\n");
                 }
+                File archivoPrograma;
+                BufferedWriter bw;
+                archivoPrograma = new File("/home/jitzo/Documentos/GitHub/Analisis/Ejecucion/src/ejecucion/algoritmo.txt");
+                bw = new BufferedWriter(new FileWriter(archivoPrograma));
+                bw.write(txtCodigo.getText());
+                bw.close();
+
                 cargado = true;
                 return;
             }
@@ -208,7 +215,8 @@ public class VistaPrincipal extends javax.swing.JFrame {
                 } catch (Exception ex) {
                     Logger.getLogger(VistaPrincipal.class
                             .getName()).log(Level.SEVERE, null, ex);
-                }try {
+                }
+                try {
                     reader.close();
                 } catch (IOException ex) {
                     Logger.getLogger(VistaPrincipal.class.getName()).log(Level.SEVERE, null, ex);
@@ -220,15 +228,16 @@ public class VistaPrincipal extends javax.swing.JFrame {
         } catch (IOException ex) {
             Logger.getLogger(VistaPrincipal.class.getName()).log(Level.SEVERE, null, ex);
         } finally {
-            
+
         }
 
     }//GEN-LAST:event_btnAnalizarActionPerformed
 
     /**
-     * Acción para el area de edición de código que calcula la cantidad de líneas 
-     * ingresadas por el usuario
-     * @param evt 
+     * Acción para el area de edición de código que calcula la cantidad de
+     * líneas ingresadas por el usuario
+     *
+     * @param evt
      */
     private void txtCodigoKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtCodigoKeyReleased
         // TODO add your handling code here:
@@ -320,9 +329,10 @@ public class VistaPrincipal extends javax.swing.JFrame {
 
     /**
      * Resalta las palabras reservadas de la aplicación
+     *
      * @param pos
      * @param length
-     * @param color 
+     * @param color
      */
     private void PonerNegrita(int pos, int length, Color color) {
         SimpleAttributeSet atributo = new SimpleAttributeSet();
