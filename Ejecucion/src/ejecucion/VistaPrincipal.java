@@ -44,6 +44,8 @@ public class VistaPrincipal extends javax.swing.JFrame {
     List<JButton> botones;
     LinkedList<Integer> breakpoints = new LinkedList<>();
     HiloAutomatico h;
+    boolean ejecutando = false;
+    int cont = 0, contV2 = 0;
 
     /**
      * Creates new form VistaPrincipal
@@ -58,7 +60,7 @@ public class VistaPrincipal extends javax.swing.JFrame {
         botones = new ArrayList<>();
         this.btnAutomatico.setEnabled(false);
         this.btnPaso.setEnabled(false);
-        this.btnPrueba.setEnabled(false);
+        this.btnejecucion.setEnabled(false);
         this.txtAlgoritmo.setEditable(false);
         this.txtConsola.setEditable(false);
         this.tblSeguimiento.setModel(modelo);
@@ -81,9 +83,14 @@ public class VistaPrincipal extends javax.swing.JFrame {
             contAux = 0;
         }
         System.out.println("Variables:\n" + p.variables);
-        btnPrueba.setName("pruebaaaa");
+        btnejecucion.setName("pruebaaaa");
     }
 
+    /**
+     * Método que lee el algoritmo escrito en el area de texto para seguimiento
+     * @throws FileNotFoundException
+     * @throws IOException 
+     */
     private void LeerAlgoritmo() throws FileNotFoundException, IOException {
         File archivo = new File("src/ejecucion/algoritmo.txt");
         FileReader fr = new FileReader(archivo);
@@ -128,8 +135,8 @@ public class VistaPrincipal extends javax.swing.JFrame {
         jLabel4 = new javax.swing.JLabel();
         jScrollPane4 = new javax.swing.JScrollPane();
         txtValores = new javax.swing.JTextArea();
-        btnDebug = new javax.swing.JButton();
-        btnPrueba = new javax.swing.JButton();
+        btnReiniciar = new javax.swing.JButton();
+        btnejecucion = new javax.swing.JButton();
         Lienzo = new javax.swing.JPanel();
         jLabel5 = new javax.swing.JLabel();
         jLabel6 = new javax.swing.JLabel();
@@ -198,17 +205,17 @@ public class VistaPrincipal extends javax.swing.JFrame {
         });
         jScrollPane4.setViewportView(txtValores);
 
-        btnDebug.setText("Reiniciar paso a paso");
-        btnDebug.addActionListener(new java.awt.event.ActionListener() {
+        btnReiniciar.setText("Reiniciar paso a paso");
+        btnReiniciar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnDebugActionPerformed(evt);
+                btnReiniciarActionPerformed(evt);
             }
         });
 
-        btnPrueba.setText("Pausar");
-        btnPrueba.addActionListener(new java.awt.event.ActionListener() {
+        btnejecucion.setText("Pausar");
+        btnejecucion.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnPruebaActionPerformed(evt);
+                btnejecucionActionPerformed(evt);
             }
         });
 
@@ -272,9 +279,9 @@ public class VistaPrincipal extends javax.swing.JFrame {
                                         .addComponent(btnMenos, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
                                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                                         .addComponent(btnMas, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                                    .addComponent(btnDebug))
+                                    .addComponent(btnReiniciar))
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(btnPrueba)))
+                                .addComponent(btnejecucion)))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 18, Short.MAX_VALUE)
                         .addComponent(jSeparator2, javax.swing.GroupLayout.PREFERRED_SIZE, 12, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(6, 6, 6)
@@ -341,8 +348,8 @@ public class VistaPrincipal extends javax.swing.JFrame {
                                     .addComponent(btnPaso))
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                    .addComponent(btnDebug)
-                                    .addComponent(btnPrueba))
+                                    .addComponent(btnReiniciar)
+                                    .addComponent(btnejecucion))
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                                     .addComponent(btnMas)
@@ -355,18 +362,25 @@ public class VistaPrincipal extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    boolean ejecutando = false;
+    
+    /**
+     * Acción para el botón de ejecución automática
+     * @param evt 
+     */
     private void btnAutomaticoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAutomaticoActionPerformed
         // TODO add your handling code here:
-        this.btnPrueba.setEnabled(true);
-        this.btnPrueba.setText("Pausar");
+        this.btnejecucion.setEnabled(true);
+        this.btnejecucion.setText("Pausar");
         ejecutando = true;
         modelo.setRowCount(0);
-        h = new HiloAutomatico(txtAlgoritmo, txtValores, modelo, instrucciones, p, cantidadEjecucion, indiceInicioLinea, breakpoints, btnPrueba);
+        h = new HiloAutomatico(txtAlgoritmo, txtValores, modelo, instrucciones, p, cantidadEjecucion, indiceInicioLinea, breakpoints, btnejecucion);
         h.start();
     }//GEN-LAST:event_btnAutomaticoActionPerformed
 
-    int cont = 0, contV2 = 0;
+    /**
+     * Acción para el botón de ejecución paso a paso
+     * @param evt 
+     */
     private void btnPasoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnPasoActionPerformed
         // TODO add your handling code here
         String i;
@@ -395,7 +409,11 @@ public class VistaPrincipal extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_btnPasoActionPerformed
 
-    private void btnDebugActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDebugActionPerformed
+    /**
+     * Acción para el botón de reinicio de estado del debug (Automático y Paso a paso)
+     * @param evt 
+     */
+    private void btnReiniciarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnReiniciarActionPerformed
         // TODO add your handling code here:
         cont = 0;
         modelo.setRowCount(0);
@@ -404,8 +422,13 @@ public class VistaPrincipal extends javax.swing.JFrame {
         this.btnAutomatico.setEnabled(true);
         this.txtAlgoritmo.getHighlighter().removeAllHighlights();
         this.txtValores.getHighlighter().removeAllHighlights();
-    }//GEN-LAST:event_btnDebugActionPerformed
+    }//GEN-LAST:event_btnReiniciarActionPerformed
 
+    /**
+     * Evento para el campo de edición de los valores
+     * de ejecución ingresador por el usuario
+     * @param evt 
+     */
     private void txtValoresKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtValoresKeyReleased
         // TODO add your handling code here:
         if (instrucciones.size() == txtValores.getText().split("\n").length) {
@@ -441,36 +464,54 @@ public class VistaPrincipal extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_txtValoresKeyReleased
 
-    private void btnPruebaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnPruebaActionPerformed
+    /**
+     * Acción para el botón que Pausa o Reanuda la ejecuión del debug Automático
+     * @param evt 
+     */
+    private void btnejecucionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnejecucionActionPerformed
         System.out.println("Ejecutando: "+ejecutando);
-        if (this.btnPrueba.getText().equals("Reanudar")) {
+        if (this.btnejecucion.getText().equals("Reanudar")) {
             h.ejecutar = true;
             ejecutando = true;
-            this.btnPrueba.setText("Pausar");
+            this.btnejecucion.setText("Pausar");
         }else{
             if (ejecutando) {
                 h.ejecutar = false;
                 ejecutando = false;
-                this.btnPrueba.setText("Reanudar");
+                this.btnejecucion.setText("Reanudar");
             } else {
                 h.ejecutar = true;
                 ejecutando = true;
-                this.btnPrueba.setText("Pausar");
+                this.btnejecucion.setText("Pausar");
             }
         }
         
-    }//GEN-LAST:event_btnPruebaActionPerformed
+    }//GEN-LAST:event_btnejecucionActionPerformed
 
+    /**
+     * Acción para el botón que disminuye la velocidad de ejecución del debug
+     * @param evt 
+     */
     private void btnMenosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnMenosActionPerformed
         // TODO add your handling code here:
         h.velocidad+=50;
     }//GEN-LAST:event_btnMenosActionPerformed
 
+    /**
+     * Acción para el botón que aumenta la velocidad de ejecución del debug
+     * @param evt 
+     */
     private void btnMasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnMasActionPerformed
         // TODO add your handling code here:
         h.velocidad-=50;
     }//GEN-LAST:event_btnMasActionPerformed
 
+    /**
+     * Agrega los botones de breakpoint para la ejecución del debug
+     * @param i
+     * @param posy
+     * @param tamano 
+     */
     private void agregarBoton(int i, int posy, int tamano) {
         JButton boton = new JButton();
         boton.setName("" + (i - 1));
@@ -512,12 +553,20 @@ public class VistaPrincipal extends javax.swing.JFrame {
         Lienzo.updateUI();
     }
 
+    /**
+     * Método que muestra el estado de las variables en la tabla de seguimiento
+     * @param s 
+     */
     private void InsertarTabla(String s) {
         String[] aux = s.split("<-");
         String[] row = {aux[0], aux[1]};
         modelo.addRow(row);
     }
 
+    /**
+     * Método que detecta los valores de ejecución ingresados por el usuario,
+     * que no concuerdan con los valores reales calculados por la aplicación
+     */
     private void ResaltarMalCalculo() {
         String split[] = this.txtValores.getText().split("\n");
         String area = this.txtValores.getText();
@@ -529,6 +578,11 @@ public class VistaPrincipal extends javax.swing.JFrame {
         }
     }
 
+    /**
+     * Método que resalta la linea que se está ejecutando actualmente
+     * @param pos
+     * @param fin 
+     */
     private void SubRayar(int pos, int fin) {
         Highlighter h = this.txtAlgoritmo.getHighlighter();
         h.removeAllHighlights();
@@ -538,6 +592,12 @@ public class VistaPrincipal extends javax.swing.JFrame {
         }
     }
 
+    /**
+     * Método que resalta los valores de ejecución ingresados por el usuario,
+     * que no concuerdan con los valores reales calculados por la aplicación
+     * @param pos
+     * @param fin 
+     */
     private void SubRayar2(int pos, int fin) {
         Highlighter h = this.txtValores.getHighlighter();
         try {
@@ -546,6 +606,10 @@ public class VistaPrincipal extends javax.swing.JFrame {
         }
     }
 
+    /**
+     * Método que compara los valores de ejecución ingresados por el usuario,
+     * con los valores reales calculados por la aplicación
+     */
     private void compararCalculoEstudiante() {
         String[] valores = this.txtValores.getText().split("\n");
         int sumaV = 0;
@@ -610,11 +674,11 @@ public class VistaPrincipal extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPanel Lienzo;
     private javax.swing.JButton btnAutomatico;
-    private javax.swing.JButton btnDebug;
     private javax.swing.JButton btnMas;
     private javax.swing.JButton btnMenos;
     private javax.swing.JButton btnPaso;
-    private javax.swing.JButton btnPrueba;
+    private javax.swing.JButton btnReiniciar;
+    private javax.swing.JButton btnejecucion;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;

@@ -18,7 +18,6 @@ import java.io.Reader;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JFileChooser;
-import javax.swing.JOptionPane;
 import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.StyleConstants;
 
@@ -28,6 +27,8 @@ import javax.swing.text.StyleConstants;
  */
 public class VistaPrincipal extends javax.swing.JFrame {
 
+    String file = "";
+    boolean cargado = false;
     /**
      * Creates new form VistaPrincipal
      */
@@ -143,25 +144,23 @@ public class VistaPrincipal extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    String file = "";
+    /**
+     * Acción para el botón que guarda el algoritmo ingresado por el usuario
+     * @param evt 
+     */
     private void btnGuardarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnGuardarActionPerformed
         // TODO add your handling code here:
         File archivoPrograma;
         BufferedWriter bw;
-
-        //archivo = JOptionPane.showInputDialog("Ingrese el nombre del programa");
         JFileChooser jF1 = new JFileChooser();
 
         try {
             if (jF1.showSaveDialog(null) == jF1.APPROVE_OPTION) {
                 file = jF1.getSelectedFile().getAbsolutePath();
-                System.out.println("File: " + file);
             }
         } catch (Exception ex) {
             ex.printStackTrace();
         }
-
-        //String file = "src/algoritmos/" + archivo + ".txt";
         archivoPrograma = new File(file);
 
         try {
@@ -179,7 +178,11 @@ public class VistaPrincipal extends javax.swing.JFrame {
 
     }//GEN-LAST:event_btnGuardarActionPerformed
 
-    boolean cargado = false;
+    /**
+     * Acción que dependiendo de una bandera, carga un algoritmo seleccionado por
+     * el usuario, o analiza un algoritmo guardado por el usuario
+     * @param evt 
+     */
     private void btnAnalizarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAnalizarActionPerformed
         Reader reader = null;
         try {
@@ -226,6 +229,11 @@ public class VistaPrincipal extends javax.swing.JFrame {
 
     }//GEN-LAST:event_btnAnalizarActionPerformed
 
+    /**
+     * Acción para el area de edición de código que calcula la cantidad de líneas 
+     * ingresadas por el usuario
+     * @param evt 
+     */
     private void txtCodigoKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtCodigoKeyReleased
         // TODO add your handling code here:
         if (evt.getKeyCode() == KeyEvent.VK_ENTER) {
@@ -314,6 +322,12 @@ public class VistaPrincipal extends javax.swing.JFrame {
 
     }//GEN-LAST:event_txtCodigoKeyReleased
 
+    /**
+     * Resalta las palabras reservadas de la aplicación
+     * @param pos
+     * @param length
+     * @param color 
+     */
     private void PonerNegrita(int pos, int length, Color color) {
         SimpleAttributeSet atributo = new SimpleAttributeSet();
         StyleConstants.setBold(atributo, true);

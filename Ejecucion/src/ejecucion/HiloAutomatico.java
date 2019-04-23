@@ -52,6 +52,9 @@ public class HiloAutomatico extends Thread {
         this.velocidad = 500;
     }
 
+    /**
+     * Hilo que realiza la ejecución automática del debug
+     */
     @Override
     public void run() {
         while (true) {
@@ -93,6 +96,10 @@ public class HiloAutomatico extends Thread {
         }
     }
 
+    /**
+     * Método que detecta los valores de ejecución ingresados por el usuario,
+     * que no concuerdan con los valores reales calculados por la aplicación
+     */
     private void ResaltarMalCalculo() {
         String split[] = this.txtValores.getText().split("\n");
         String area = this.txtValores.getText();
@@ -104,6 +111,10 @@ public class HiloAutomatico extends Thread {
         }
     }
 
+    /**
+     * Método que compara los valores de ejecución ingresados por el usuario,
+     * con los valores reales calculados por la aplicación
+     */
     private void compararCalculoEstudiante() {
         String[] valores = this.txtValores.getText().split("\n");
         for (int i = 0; i < valores.length; i++) {
@@ -114,6 +125,11 @@ public class HiloAutomatico extends Thread {
         }
     }
 
+    /**
+     * Método que resalta la linea que se está ejecutando actualmente
+     * @param pos
+     * @param fin 
+     */
     private void SubRayar(int pos, int fin) {
         Highlighter h = this.txtAlgoritmo.getHighlighter();
         h.removeAllHighlights();
@@ -123,6 +139,12 @@ public class HiloAutomatico extends Thread {
         }
     }
 
+    /**
+     * Método que resalta los valores de ejecución ingresados por el usuario,
+     * que no concuerdan con los valores reales calculados por la aplicación
+     * @param pos
+     * @param fin 
+     */
     private void SubRayar2(int pos, int fin) {
         Highlighter h = this.txtValores.getHighlighter();
         try {
@@ -131,6 +153,10 @@ public class HiloAutomatico extends Thread {
         }
     }
 
+    /**
+     * Método que muestra el estado de las variables en la tabla de seguimiento
+     * @param s 
+     */
     private void InsertarTabla(String s) {
         String[] aux = s.split("<-");
         String[] row = {aux[0], aux[1]};

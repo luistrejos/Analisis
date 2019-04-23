@@ -55,10 +55,10 @@
                                       <EmptySpace type="unrelated" max="-2" attributes="0"/>
                                       <Component id="btnMas" max="32767" attributes="0"/>
                                   </Group>
-                                  <Component id="btnDebug" min="-2" max="-2" attributes="0"/>
+                                  <Component id="btnReiniciar" min="-2" max="-2" attributes="0"/>
                               </Group>
                               <EmptySpace type="unrelated" max="-2" attributes="0"/>
-                              <Component id="btnPrueba" min="-2" max="-2" attributes="0"/>
+                              <Component id="btnejecucion" min="-2" max="-2" attributes="0"/>
                           </Group>
                       </Group>
                       <EmptySpace pref="18" max="32767" attributes="0"/>
@@ -144,8 +144,8 @@
                               </Group>
                               <EmptySpace max="-2" attributes="0"/>
                               <Group type="103" groupAlignment="3" attributes="0">
-                                  <Component id="btnDebug" alignment="3" min="-2" max="-2" attributes="0"/>
-                                  <Component id="btnPrueba" alignment="3" min="-2" max="-2" attributes="0"/>
+                                  <Component id="btnReiniciar" alignment="3" min="-2" max="-2" attributes="0"/>
+                                  <Component id="btnejecucion" alignment="3" min="-2" max="-2" attributes="0"/>
                               </Group>
                               <EmptySpace max="-2" attributes="0"/>
                               <Group type="103" groupAlignment="3" attributes="0">
@@ -283,20 +283,20 @@
         </Component>
       </SubComponents>
     </Container>
-    <Component class="javax.swing.JButton" name="btnDebug">
+    <Component class="javax.swing.JButton" name="btnReiniciar">
       <Properties>
         <Property name="text" type="java.lang.String" value="Reiniciar paso a paso"/>
       </Properties>
       <Events>
-        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnDebugActionPerformed"/>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnReiniciarActionPerformed"/>
       </Events>
     </Component>
-    <Component class="javax.swing.JButton" name="btnPrueba">
+    <Component class="javax.swing.JButton" name="btnejecucion">
       <Properties>
         <Property name="text" type="java.lang.String" value="Pausar"/>
       </Properties>
       <Events>
-        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnPruebaActionPerformed"/>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnejecucionActionPerformed"/>
       </Events>
     </Component>
     <Container class="javax.swing.JPanel" name="Lienzo">
