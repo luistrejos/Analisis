@@ -9,6 +9,7 @@ import java.awt.Color;
 import java.util.LinkedList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JButton;
 import javax.swing.JTextArea;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.text.BadLocationException;
@@ -29,12 +30,16 @@ public class HiloAutomatico extends Thread {
     Programa p;
     LinkedList<Integer> cantidadEjecucion;
     LinkedList<Integer> indiceInicioLinea;
+    LinkedList<Integer> breakpoints;
     boolean ejecutar = true;
+    JButton btn;
+    boolean ejecutando;
 
     public HiloAutomatico(JTextArea area, JTextArea txtValores, DefaultTableModel modelo,
             LinkedList<String[]> instrucciones, Programa p,
             LinkedList<Integer> cantidadEjecucion,
-            LinkedList<Integer> indiceInicioLinea) {
+            LinkedList<Integer> indiceInicioLinea, LinkedList<Integer> breakpoints,
+            JButton btn, boolean ejecutando) {
         this.txtAlgoritmo = area;
         this.txtValores = txtValores;
         this.modelo = modelo;
@@ -42,6 +47,9 @@ public class HiloAutomatico extends Thread {
         this.p = p;
         this.cantidadEjecucion = cantidadEjecucion;
         this.indiceInicioLinea = indiceInicioLinea;
+        this.breakpoints = breakpoints;
+        this.btn = btn;
+        this.ejecutando = ejecutando;
     }
 
     @Override
@@ -52,12 +60,21 @@ public class HiloAutomatico extends Thread {
                 if (cont2 < p.instrucciones.size() && (i = p.instrucciones.get(cont2)) != null) {
                     for (String[] aux : instrucciones) {
                         if (aux[0].trim().equals(i)) {
+                            for (Integer breakpoint : breakpoints) {
+                                if (breakpoint == instrucciones.indexOf(aux)) {
+                                    System.out.println("Linea: "+aux[0].trim() + " : "+breakpoint);
+                                    ejecutar = false;
+                                    ejecutando = false;
+                                    btn.setText("Reanudar");
+                                }
+                            }
                             SubRayar(Integer.valueOf(aux[1]), aux[0].length());
                             if (aux[0].contains("<-") && contV < p.variables.size()) {
                                 InsertarTabla(p.variables.get(contV));
                                 contV++;
                             }
                         }
+
                     }
                     cont2++;
                 }

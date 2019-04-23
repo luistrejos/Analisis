@@ -6,14 +6,20 @@
 package ejecucion;
 
 import java.awt.Color;
+import java.awt.event.KeyEvent;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JButton;
 import javax.swing.Timer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.text.BadLocationException;
@@ -35,6 +41,8 @@ public class VistaPrincipal extends javax.swing.JFrame {
     String[] varTable = new String[2];
     LinkedList<Integer> cantidadEjecucion = new LinkedList<>();
     LinkedList<Integer> indiceInicioLinea = new LinkedList<>();
+    List<JButton> botones;
+    LinkedList<Integer> breakpoints = new LinkedList<>();
     HiloAutomatico h;
 
     /**
@@ -47,6 +55,7 @@ public class VistaPrincipal extends javax.swing.JFrame {
         this.setLocationRelativeTo(null);
         LeerAlgoritmo();
         p.main();
+        botones = new ArrayList<>();
         this.btnAutomatico.setEnabled(false);
         this.btnPaso.setEnabled(false);
         this.btnPrueba.setEnabled(false);
@@ -121,6 +130,7 @@ public class VistaPrincipal extends javax.swing.JFrame {
         txtValores = new javax.swing.JTextArea();
         btnDebug = new javax.swing.JButton();
         btnPrueba = new javax.swing.JButton();
+        Lienzo = new javax.swing.JPanel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -194,6 +204,9 @@ public class VistaPrincipal extends javax.swing.JFrame {
             }
         });
 
+        Lienzo.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
+        Lienzo.setLayout(null);
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -203,9 +216,11 @@ public class VistaPrincipal extends javax.swing.JFrame {
                     .addGroup(layout.createSequentialGroup()
                         .addGap(6, 6, 6)
                         .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 265, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(54, 54, 54)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(Lienzo, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, 54, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(18, 18, 18)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 12, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(layout.createSequentialGroup()
@@ -251,8 +266,8 @@ public class VistaPrincipal extends javax.swing.JFrame {
                             .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 27, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 27, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(layout.createSequentialGroup()
                                 .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 514, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
@@ -262,10 +277,11 @@ public class VistaPrincipal extends javax.swing.JFrame {
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                                     .addComponent(btnDebug)
                                     .addComponent(btnPrueba)))
-                            .addComponent(jSeparator2)
-                            .addComponent(jScrollPane3)
-                            .addComponent(jScrollPane4, javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jSeparator1))
+                            .addComponent(jSeparator2, javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(jScrollPane3, javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(jScrollPane4)
+                            .addComponent(jSeparator1, javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(Lienzo, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                         .addContainerGap())
                     .addGroup(layout.createSequentialGroup()
                         .addGap(16, 16, 16)
@@ -278,8 +294,6 @@ public class VistaPrincipal extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    
-    Timer timer;
     boolean ejecutando = false;
     private void btnAutomaticoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAutomaticoActionPerformed
         // TODO add your handling code here:
@@ -287,35 +301,8 @@ public class VistaPrincipal extends javax.swing.JFrame {
         this.btnPrueba.setText("Pausar");
         ejecutando = true;
         modelo.setRowCount(0);
-        h = new HiloAutomatico(txtAlgoritmo, txtValores, modelo, instrucciones, p, cantidadEjecucion, indiceInicioLinea);
+        h = new HiloAutomatico(txtAlgoritmo, txtValores, modelo, instrucciones, p, cantidadEjecucion, indiceInicioLinea, breakpoints, btnPrueba, ejecutando);
         h.start();
-        /*timer = new Timer(500, new ActionListener() {
-            int cont2 = 0, contV = 0;
-
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                String i;
-                if (cont2 < p.instrucciones.size() && (i = p.instrucciones.get(cont2)) != null) {
-                    for (String[] aux : instrucciones) {
-                        if (aux[0].trim().equals(i)) {
-                            SubRayar(Integer.valueOf(aux[1]), aux[0].length());
-                            if (aux[0].contains("<-") && contV < p.variables.size()) {
-                                InsertarTabla(p.variables.get(contV));
-                                contV++;
-                            }
-                        }
-                    }
-                    cont2++;
-                }
-                if (cont2 >= p.instrucciones.size()) {
-                    ResaltarMalCalculo();
-                    compararCalculoEstudiante();
-                }
-            }
-        });
-        timer.start();*/
-
-
     }//GEN-LAST:event_btnAutomaticoActionPerformed
 
     int cont = 0, contV2 = 0;
@@ -367,19 +354,92 @@ public class VistaPrincipal extends javax.swing.JFrame {
             this.btnAutomatico.setEnabled(false);
             this.btnPaso.setEnabled(false);
         }
+        if (evt.getKeyCode() == KeyEvent.VK_ENTER) {
+            int n = this.txtValores.getText().split("\n").length;
+            botones.clear();
+            Lienzo.removeAll();
+            int posY = 5;
+            int tamano;
+            for (int i = 1; i <= n + 1; i++) {
+                tamano = 15;
+                agregarBoton(i, posY, tamano);
+                posY = posY + tamano;
+            }
+        }
+        if (evt.getKeyCode() == KeyEvent.VK_BACK_SPACE) {
+            int n = this.txtValores.getText().split("\n").length;
+            botones.clear();
+            Lienzo.removeAll();
+            int posY = 5;
+            int tamano;
+            for (int i = 1; i <= n + 1; i++) {
+                tamano = 15;
+                agregarBoton(i, posY, tamano);
+                posY = posY + tamano;
+            }
+        }
     }//GEN-LAST:event_txtValoresKeyReleased
 
     private void btnPruebaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnPruebaActionPerformed
-        if (ejecutando) {
-            h.ejecutar = false;
-            ejecutando = false;
-            this.btnPrueba.setText("Reanudar");
-        }else{
+        System.out.println("Ejecutando: "+ejecutando);
+        if (this.btnPrueba.getText().equals("Reanudar")) {
             h.ejecutar = true;
             ejecutando = true;
             this.btnPrueba.setText("Pausar");
+        }else{
+            if (ejecutando) {
+                h.ejecutar = false;
+                ejecutando = false;
+                this.btnPrueba.setText("Reanudar");
+            } else {
+                h.ejecutar = true;
+                ejecutando = true;
+                this.btnPrueba.setText("Pausar");
+            }
         }
+        
     }//GEN-LAST:event_btnPruebaActionPerformed
+
+    private void agregarBoton(int i, int posy, int tamano) {
+        JButton boton = new JButton();
+        boton.setName("" + (i - 1));
+        boton.setBounds(0, posy, tamano, tamano);
+        boton.addMouseListener(new MouseListener() {
+            boolean b = true;
+
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                if (b) {
+                    boton.setBackground(Color.red);
+                    breakpoints.add(Integer.valueOf(boton.getName()));
+                    b = false;
+                } else {
+                    boton.setBackground(Color.lightGray);
+                    breakpoints.remove(Integer.valueOf(boton.getName()));
+                    b = true;
+                }
+            }
+
+            @Override
+            public void mousePressed(MouseEvent e) {
+            }
+
+            @Override
+            public void mouseReleased(MouseEvent e) {
+            }
+
+            @Override
+            public void mouseEntered(MouseEvent e) {
+            }
+
+            @Override
+            public void mouseExited(MouseEvent e) {
+            }
+        });
+        botones.add(boton);
+        Lienzo.add(boton);
+        Lienzo.updateUI();
+    }
 
     private void InsertarTabla(String s) {
         String[] aux = s.split("<-");
@@ -467,6 +527,7 @@ public class VistaPrincipal extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JPanel Lienzo;
     private javax.swing.JButton btnAutomatico;
     private javax.swing.JButton btnDebug;
     private javax.swing.JButton btnPaso;
